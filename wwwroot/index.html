@@ -5,27 +5,51 @@
     <title>Wimab Event RSVP</title>
 </head>
 <body>
-    <h2>RSVP for the Event</h2>
+    <h2>RSVP for the Birthday Party</h2>
     <form id="rsvpForm">
         <input type="text" id="name" placeholder="Name" required><br>
         <input type="text" id="surname" placeholder="Surname" required><br>
         <input type="tel" id="phone" placeholder="Phone Number" required><br>
+        
         <label>
             <input type="checkbox" id="attending"> I will attend
         </label><br>
+
         <textarea id="dietary" placeholder="Dietary Requirements"></textarea><br>
+
+        <label>
+            <input type="checkbox" id="plusOneToggle"> Are you bringing a plus one?
+        </label><br>
+
+        <div id="plusOneDetails" style="display: none;">
+            <input type="text" id="plusOneName" placeholder="Plus One Name">
+            <br>
+        </div>
+
         <button type="submit">Submit RSVP</button>
     </form>
 
     <script>
+        // Show/Hide logic for Plus One
+        const toggle = document.getElementById('plusOneToggle');
+        const details = document.getElementById('plusOneDetails');
+
+        toggle.addEventListener('change', () => {
+            details.style.display = toggle.checked ? 'block' : 'none';
+        });
+
+        
         document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const guest = {
                 name: document.getElementById('name').value,
                 surname: document.getElementById('surname').value,
                 phoneNumber: document.getElementById('phone').value,
                 isAttending: document.getElementById('attending').checked,
-                dietaryRequirements: document.getElementById('dietary').value
+                dietaryRequirements: document.getElementById('dietary').value,
+                // Only send the PlusOneName if the checkbox is checked
+                plusOneName: toggle.checked ? document.getElementById('plusOneName').value : null
             };
 
             const response = await fetch('/api/rsvp', {
@@ -34,8 +58,13 @@
                 body: JSON.stringify(guest)
             });
 
-            if (response.ok) alert("RSVP Sent!");
-            else alert("Error sending RSVP.");
+            if (response.ok) {
+                alert("RSVP Sent!");
+                document.getElementById('rsvpForm').reset();
+                details.style.display = 'none'; // Hide plus one field again after success
+            } else {
+                alert("Error sending RSVP.");
+            }
         });
     </script>
 </body>
