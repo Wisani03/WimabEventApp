@@ -40,13 +40,16 @@
     }
 
     function claimGift(id) {
-        fetch(`/api/gift/claim/${id}`, { method: 'POST' })
-            .then(response => {
-                if (response.ok) {
-                    loadGifts(); // Refresh the list to show "Claimed" status
-                }
-            });
-    }
+    fetch(`/api/gift/claim/${id}`, { method: 'POST' })
+        .then(response => {
+            if (response.ok) {
+                alert("Thank you! Your gift has been claimed successfully."); 
+                loadGifts(); 
+            } else {
+                alert("Oops! Something went wrong. Please try again.");
+            }
+        });
+}
 
     
     loadGifts();
