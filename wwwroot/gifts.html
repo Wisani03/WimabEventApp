@@ -14,12 +14,13 @@
         </div>
     </div>
 
-    <script>
-        // Fetch gifts from API
+   <script>
+    function loadGifts() {
         fetch('/api/gifts')
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById('gift-list');
+                list.innerHTML = ''; // Clear current list
                 data.forEach(gift => {
                     const card = document.createElement('div');
                     card.className = "bg-white p-6 rounded-xl shadow-lg border border-gray-200";
@@ -27,13 +28,28 @@
                         <h2 class="text-xl font-semibold">${gift.name}</h2>
                         <p class="text-gray-600 mt-2">${gift.description}</p>
                         <p class="text-blue-600 font-bold mt-4">R${gift.price}</p>
-                        <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                        <button onclick="claimGift(${gift.id})" 
+                                class="mt-4 w-full py-2 rounded-lg transition ${gift.isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}"
+                                ${gift.isClaimed ? 'disabled' : ''}>
                             ${gift.isClaimed ? 'Claimed' : 'Claim Gift'}
                         </button>
                     `;
                     list.appendChild(card);
                 });
             });
-    </script>
+    }
+
+    function claimGift(id) {
+        fetch(`/api/gift/claim/${id}`, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    loadGifts(); // Refresh the list to show "Claimed" status
+                }
+            });
+    }
+
+    
+    loadGifts();
+</script>
 </body>
 </html>
