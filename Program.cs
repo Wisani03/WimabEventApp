@@ -62,4 +62,24 @@ app.MapPost("/api/gift/claim/{id}", async (int id, AppDbContext db) =>
     return Results.Ok(new { message = "Gift claimed successfully!" });
 });
 
+// API endpoint to add a new gift
+app.MapPost("/api/gifts/add", async (Gift gift, AppDbContext db) =>
+{
+    gift.IsClaimed = false; // New gifts are never claimed by default
+    db.Gifts.Add(gift);
+    await db.SaveChangesAsync();
+    return Results.Ok(new { message = "Gift added successfully!" });
+});
+
+// API endpoint to delete a gift
+app.MapDelete("/api/gifts/delete/{id}", async (int id, AppDbContext db) =>
+{
+    var gift = await db.Gifts.FindAsync(id);
+    if (gift == null) return Results.NotFound();
+
+    db.Gifts.Remove(gift);
+    await db.SaveChangesAsync();
+    return Results.Ok(new { message = "Gift deleted successfully!" });
+});
+
 app.Run();
