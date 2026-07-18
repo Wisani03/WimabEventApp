@@ -9,14 +9,14 @@
 </head>
 <body class="bg-slate-900 min-h-screen p-4 flex flex-col items-center">
 
-    <!-- Header Section -->
+    
     <div class="max-w-md w-full text-center mb-8 mt-4 text-white">
         <h1 class="text-4xl font-bold mb-2">Mabunda Gathering</h1>
         <p class="text-slate-400">Join us for a special occasion.</p>
         <div id="countdown" class="mt-4 text-xl font-mono text-blue-400">Loading countdown...</div>
     </div>
 
-    <!-- RSVP Form Container -->
+    
     <div class="max-w-md w-full bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-2xl shadow-2xl text-white">
         <h2 class="text-xl mb-6 flex items-center gap-2"><i data-lucide="check-square"></i> RSVP Form</h2>
         
@@ -57,9 +57,9 @@
         </form>
     </div>
 
-    <!-- Quick Action Buttons -->
+    
     <div class="max-w-md w-full mt-8 grid grid-cols-2 gap-4">
-        <!-- Location Link extracted from your embed code -->
+        
 <a href="https://www.google.com/maps?q=-23.936119,31.033638" target="_blank" class="flex flex-col items-center bg-white/5 p-4 rounded-xl border border-white/10 text-white hover:bg-white/10 transition">
     <i data-lucide="map-pin" class="mb-2"></i> <span class="text-xs">Location</span>
 </a>
@@ -73,7 +73,7 @@
         document.getElementById("year").textContent = new Date().getFullYear();
         lucide.createIcons();
 
-        // 1. Countdown Logic
+        
         const eventDate = new Date("2026-12-25T10:00:00").getTime();
         setInterval(() => {
             const now = new Date().getTime();
@@ -83,7 +83,7 @@
             document.getElementById("countdown").innerHTML = `${days}d ${hours}h until the gathering!`;
         }, 1000);
 
-        // 2. Form Logic
+        
         const toggle = document.getElementById('plusOneToggle');
         const plusOneInput = document.getElementById('plusOneName');
         toggle.addEventListener('change', () => plusOneInput.classList.toggle('hidden', !toggle.checked));

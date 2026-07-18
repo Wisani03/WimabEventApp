@@ -10,7 +10,7 @@
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8">Gift Registry</h1>
         <div id="gift-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Gift cards will appear here -->
+            
         </div>
     </div>
 
@@ -20,7 +20,7 @@
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById('gift-list');
-                list.innerHTML = ''; // Clear current list
+                list.innerHTML = ''; 
                 data.forEach(gift => {
                     const card = document.createElement('div');
                     card.className = "bg-white p-6 rounded-xl shadow-lg border border-gray-200";
