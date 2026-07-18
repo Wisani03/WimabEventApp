@@ -1,6 +1,14 @@
-﻿bin/
+﻿# Ignore build artifacts
+bin/
 obj/
-*.db
 .vs/
 .vscode/
+
+# Ignore database files
+*.db
+*.db-shm
+*.db-wal
+
+# Ignore sensitive settings
 appsettings.Development.json
+appsettings.json

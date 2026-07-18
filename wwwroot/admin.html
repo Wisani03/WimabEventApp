@@ -29,6 +29,13 @@
     </div>
 
     <script>
+
+        // Quick and simple protection
+    const password = prompt("Enter Admin Password:");
+if (password !== "Wimab2026") { 
+    alert("Unauthorized Access!");
+    window.location.href = "/";
+}
         // Fetch and display gifts
         function loadAdminGifts() {
             fetch('/api/gifts')

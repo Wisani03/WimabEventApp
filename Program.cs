@@ -13,7 +13,7 @@ var app = builder.Build();
 app.UseDefaultFiles(); 
 app.UseStaticFiles();
 
-//  The API endpoint to save RSVPs
+// The API endpoint to save RSVPs
 app.MapPost("/api/rsvp", async (Guest guest, AppDbContext db) =>
 {
     if (string.IsNullOrEmpty(guest.Name) || string.IsNullOrEmpty(guest.Surname))
@@ -27,13 +27,17 @@ app.MapPost("/api/rsvp", async (Guest guest, AppDbContext db) =>
     return Results.Ok(new { message = "RSVP received successfully!" });
 });
 
+// NEW: API to get all RSVP'd guests
+app.MapGet("/api/guests", async (AppDbContext db) => 
+    await db.Guests.ToListAsync());
+
 // The API endpoint to get the list of gifts
 app.MapGet("/api/gifts", (AppDbContext db) => 
 {
     return db.Gifts.ToList();
 });
 
-//  Populate initial gifts if the table is empty
+// Populate initial gifts if the table is empty
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

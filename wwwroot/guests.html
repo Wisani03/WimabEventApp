@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Guest List</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">RSVP Guest List</h1>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-700">
+                        <th class="p-4 border-b">Name</th>
+                        <th class="p-4 border-b">Status</th>
+                        <th class="p-4 border-b">Dietary Needs</th>
+                        <th class="p-4 border-b">Plus One</th>
+                    </tr>
+                </thead>
+                <tbody id="guest-table" class="text-gray-600">
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        // Quick and simple protection
+    const password = prompt("Enter Admin Password:");
+    if (password !== "Guest2026") {
+    alert("Unauthorized Access!");
+    window.location.href = "/";
+}
+        // Fetch guests from the API
+        fetch('/api/guests')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('guest-table');
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">No RSVPs yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(g => `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium">${g.name} ${g.surname}</td>
+                        <td class="p-4">
+                            ${g.isAttending 
+                                ? '<i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i>' 
+                                : '<i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i>'}
+                        </td>
+                        <td class="p-4">${g.dietaryRequirements || '<span class="text-gray-300 italic">None</span>'}</td>
+                        <td class="p-4">${g.plusOneName || '<span class="text-gray-300 italic">None</span>'}</td>
+                    </tr>
+                `).join('');
+                
+                
+                lucide.createIcons();
+            })
+            .catch(err => {
+                console.error("Error loading guests:", err);
+            });
+    </script>
+</body>
+</html>
