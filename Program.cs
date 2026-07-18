@@ -51,4 +51,15 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.MapPost("/api/gift/claim/{id}", async (int id, AppDbContext db) =>
+{
+    var gift = await db.Gifts.FindAsync(id);
+    if (gift == null) return Results.NotFound();
+
+    gift.IsClaimed = true;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { message = "Gift claimed successfully!" });
+});
+
 app.Run();

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wimab Event - Gift Registry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">Gift Registry</h1>
+        <div id="gift-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Gift cards will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Fetch gifts from API
+        fetch('/api/gifts')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('gift-list');
+                data.forEach(gift => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-xl shadow-lg border border-gray-200";
+                    card.innerHTML = `
+                        <h2 class="text-xl font-semibold">${gift.name}</h2>
+                        <p class="text-gray-600 mt-2">${gift.description}</p>
+                        <p class="text-blue-600 font-bold mt-4">R${gift.price}</p>
+                        <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                            ${gift.isClaimed ? 'Claimed' : 'Claim Gift'}
+                        </button>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+    </script>
+</body>
+</html>
