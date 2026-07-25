@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wimab Event Hub - Host Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .bg-primary { background-color: #001f5b; }
+        .text-primary { color: #001f5b; }
+        .bg-accent { background-color: #c89a2c; }
+        .text-accent { color: #c89a2c; }
+        .border-accent { border-color: #c89a2c; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl sm:text-2xl font-bold text-primary">Wimab<span class="text-accent">Event Hub</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="userDisplay" class="text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline"></span>
+                <button onclick="logout()" class="flex items-center space-x-1 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 px-4 py-2 rounded-full text-sm font-medium transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-10">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-primary">Your Event Dashboard</h1>
+                <p class="text-gray-500 text-sm sm:text-base mt-1">Manage all your hosted celebrations, registries, and guest lists in one place.</p>
+            </div>
+            <button onclick="openCreateModal()" class="w-full sm:w-auto bg-accent text-primary px-6 py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-yellow-600 transition shadow-md">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                <span>Create New Event</span>
+            </button>
+        </div>
+
+        <h2 class="text-xl font-bold text-primary mb-6">Active Events</h2>
+        <div id="eventList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+
+    </main>
+
+    <!-- Create Event Modal -->
+    <div id="createModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+            <button onclick="closeCreateModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">&times;</button>
+            <h3 class="text-2xl font-bold text-primary mb-2">Create New Event</h3>
+            <p class="text-gray-500 mb-6 text-sm">Set up your custom gathering details.</p>
+            
+            <form id="createEventForm" onsubmit="saveEvent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Event Title</label>
+                    <input type="text" id="eventTitle" required placeholder="e.g., Summer Braai & Celebration" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Date</label>
+                        <input type="date" id="eventDate" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Venue / Location</label>
+                        <input type="text" id="eventVenue" required placeholder="e.g., Rosebank Rooftop" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Description / Theme</label>
+                    <textarea id="eventDesc" rows="3" placeholder="Share a few details with your guests..." class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white py-3.5 rounded-xl font-bold hover:bg-accent hover:text-primary transition shadow-md">
+                    Publish Event
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Check if user is logged in
+        const userId = localStorage.getItem('wimab_userid');
+        if (!userId) {
+            window.location.href = '/landing.html';
+        } else {
+            document.getElementById('userDisplay').innerText = `ID: ${userId}`;
+            loadEvents();
+        }
+
+        function logout() {
+            localStorage.removeItem('wimab_userid');
+            window.location.href = '/landing.html';
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+        }
+
+        // Load events stored in local storage for this user session
+        function loadEvents() {
+            const container = document.getElementById('eventList');
+            let events = JSON.parse(localStorage.getItem('wimab_events') || '[]');
+
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white p-12 rounded-3xl text-center border border-dashed border-gray-200">
+                        <div class="w-12 h-12 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="calendar" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-700 text-lg">No events created yet</h3>
+                        <p class="text-gray-500 text-sm mt-1">Click "Create New Event" above to get started.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = events.map((ev, index) => `
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-semibold">${ev.date}</span>
+                            <button onclick="deleteEvent(${index})" class="text-gray-400 hover:text-red-500 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-xl font-bold text-primary mb-2">${ev.title}</h3>
+                        <p class="text-gray-500 text-sm flex items-center space-x-1 mb-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-accent"></i>
+                            <span>${ev.venue}</span>
+                        </p>
+                        <p class="text-gray-600 text-sm line-clamp-2 mb-6">${ev.description || 'No description provided.'}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-4 border-t border-gray-100">
+                        <a href="/guests.html" class="flex items-center justify-center space-x-1 bg-gray-50 hover:bg-primary hover:text-white text-gray-700 py-2.5 rounded-xl text-xs font-semibold transition">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            <span>Guest List</span>
+                        </a>
+                        <a href="/admin.html" class="flex items-center justify-center space-x-1 bg-gray-50 hover:bg-accent hover:text-primary text-gray-700 py-2.5 rounded-xl text-xs font-semibold transition">
+                            <i data-lucide="gift" class="w-3.5 h-3.5"></i>
+                            <span>Registry</span>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function saveEvent(e) {
+            e.preventDefault();
+            const newEvent = {
+                title: document.getElementById('eventTitle').value,
+                date: document.getElementById('eventDate').value,
+                venue: document.getElementById('eventVenue').value,
+                description: document.getElementById('eventDesc').value
+            };
+
+            let events = JSON.parse(localStorage.getItem('wimab_events') || '[]');
+            events.push(newEvent);
+            localStorage.setItem('wimab_events', JSON.stringify(events));
+
+            closeCreateModal();
+            document.getElementById('createEventForm').reset();
+            loadEvents();
+        }
+
+        function deleteEvent(index) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                let events = JSON.parse(localStorage.getItem('wimab_events') || '[]');
+                events.splice(index, 1);
+                localStorage.setItem('wimab_events', JSON.stringify(events));
+                loadEvents();
+            }
+        }
+    </script>
+</body>
+</html>
