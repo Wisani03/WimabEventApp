@@ -7,7 +7,7 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<Guest> Guests => Set<Guest>();
-
-    public DbSet<Gift> Gifts { get; set; }
+    public DbSet<Event> Events => Set<Event>();
+    public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+    public DbSet<Invitation> Invitations => Set<Invitation>();
 }

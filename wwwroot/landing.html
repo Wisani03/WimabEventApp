@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wimab Event Hub - Create & Manage Your Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .bg-primary { background-color: #001f5b; }
+        .text-primary { color: #001f5b; }
+        .bg-accent { background-color: #c89a2c; }
+        .text-accent { color: #c89a2c; }
+        .border-accent { border-color: #c89a2c; }
+
+        .hero-bg {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease-in-out;
+        }
+
+        .hero-overlay {
+            background: linear-gradient(135deg, rgba(0, 31, 91, 0.72) 0%, rgba(0, 15, 45, 0.65) 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <nav class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl sm:text-2xl font-bold text-primary">Wimab<span class="text-accent">Event Hub</span></span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 font-medium text-gray-600">
+                <a href="#features" class="hover:text-primary transition">Services</a>
+                <a href="#about" class="hover:text-primary transition">About</a>
+                <a href="#contact" class="hover:text-primary transition">Contact</a>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="openLoginModal()" class="bg-primary text-white px-5 sm:px-6 py-2 rounded-full font-semibold text-sm sm:text-base hover:bg-accent hover:text-primary transition shadow-md">
+                    Sign In
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-bg text-white py-24 sm:py-32 px-4 sm:px-6 text-center overflow-hidden" id="heroSlideshow">
+        <div class="hero-overlay absolute inset-0"></div>
+        <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-accent/20 text-accent border border-accent/40 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide uppercase">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Modern Event & Registry Platform</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+                Plan, Invite, & Celebrate with <span class="text-accent">Elegance</span>
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
+                The all-in-one platform for modern hosts. Create customized event pages, curate tailored gift registries, and track guests effortlessly from your phone or PC.
+            </p>
+            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <button onclick="openLoginModal()" class="w-full sm:w-auto bg-accent text-primary px-8 py-3.5 rounded-full font-bold text-base sm:text-lg shadow-xl hover:bg-white transition transform hover:-translate-y-0.5">
+                    Get Started Free
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-12 sm:mb-16">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary">Services We Offer</h2>
+            <p class="text-gray-500 mt-2 text-sm sm:text-base">Everything you need to bring your dream event to life.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Service 1 -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition">
+                <div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Custom Event Pages</h3>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    Build personalized invitation sites complete with your venue details, dress code, theme guidelines, and schedule.
+                </p>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition">
+                <div class="w-12 h-12 bg-amber-50 text-accent rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="gift" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Smart Wishlists & Registries</h3>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    List the exact gifts or contributions you need. Guests can view and claim items seamlessly to avoid duplicates.
+                </p>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition sm:col-span-2 md:col-span-1">
+                <div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Multi-Channel Invitations</h3>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    Send invitations instantly via Email, SMS, or WhatsApp. Track live RSVPs and plus-ones right from your dashboard.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-16 bg-white border-t border-gray-100 px-4 sm:px-6">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary">About Wimab Event Hub</h2>
+            <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Designed to make organizing gatherings, parties, and special occasions completely frictionless. Whether you are hosting an intimate family braai or a grand celebration, Wimab Event Hub gives you professional-grade tools right from your browser.
+            </p>
+        </div>
+    </section>
+
+    <section id="contact" class="py-16 px-4 sm:px-6 max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">Get In Touch</h2>
+        <p class="text-gray-600 text-sm sm:text-base mb-6">Have questions or need assistance with your event setup? Reach out to our team.</p>
+        <a href="mailto:support@wimabevents.com" class="inline-flex items-center space-x-2 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-accent hover:text-primary transition shadow-md">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+            <span>support@wimabevents.com</span>
+        </a>
+    </section>
+
+    <footer class="bg-primary text-gray-400 py-10 sm:py-12 px-6 text-center text-xs sm:text-sm">
+        <p>&copy; 2026 Wimab Event Hub. Developed by Wisani Mabunda. All rights reserved.</p>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-center transform transition-all">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">&times;</button>
+            <h3 class="text-xl sm:text-2xl font-bold text-primary mb-2">Welcome to Wimab Hub</h3>
+            <p class="text-gray-500 mb-6 text-xs sm:text-sm">Sign in securely to access your event dashboard</p>
+            
+            <div class="space-y-3 sm:space-y-4">
+                <button onclick="simulateLogin()" class="w-full flex items-center justify-center space-x-3 border border-gray-300 py-3.5 rounded-xl hover:bg-gray-50 transition font-medium text-gray-700 text-sm sm:text-base shadow-sm">
+                    <i data-lucide="globe" class="w-5 h-5 text-blue-600"></i>
+                    <span>Continue with Google</span>
+                </button>
+                <button onclick="simulateLogin()" class="w-full flex items-center justify-center space-x-3 bg-black text-white py-3.5 rounded-xl hover:bg-gray-800 transition font-medium text-sm sm:text-base shadow-sm">
+                    <i data-lucide="apple" class="w-5 h-5"></i>
+                    <span>Continue with Apple</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const bgImages = [
+            'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1920&q=80',
+            'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1920&q=80',
+            'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1920&q=80'
+        ];
+
+        let currentBgIndex = 0;
+        const heroSection = document.getElementById('heroSlideshow');
+
+        function changeHeroBackground() {
+            heroSection.style.backgroundImage = `url('${bgImages[currentBgIndex]}')`;
+            currentBgIndex = (currentBgIndex + 1) % bgImages.length;
+        }
+
+        changeHeroBackground();
+        setInterval(changeHeroBackground, 6000);
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function simulateLogin() {
+            localStorage.setItem('wimab_userid', 'user_' + Math.random().toString(36).substring(2, 9));
+            alert("Signed in successfully!");
+            window.location.href = "/dashboard.html"; 
+        }
+    </script>
+</body>
+</html>

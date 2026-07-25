@@ -13,77 +13,99 @@ var app = builder.Build();
 app.UseDefaultFiles(); 
 app.UseStaticFiles();
 
-// The API endpoint to save RSVPs
-app.MapPost("/api/rsvp", async (Guest guest, AppDbContext db) =>
-{
-    if (string.IsNullOrEmpty(guest.Name) || string.IsNullOrEmpty(guest.Surname))
-        return Results.BadRequest("Name and Surname are required.");
-
-    guest.RSVPDate = DateTime.Now;
-    
-    db.Guests.Add(guest);
-    await db.SaveChangesAsync();
-    
-    return Results.Ok(new { message = "RSVP received successfully!" });
-});
-
-// NEW: API to get all RSVP'd guests
-app.MapGet("/api/guests", async (AppDbContext db) => 
-    await db.Guests.ToListAsync());
-
-// The API endpoint to get the list of gifts
-app.MapGet("/api/gifts", (AppDbContext db) => 
-{
-    return db.Gifts.ToList();
-});
-
-// Populate initial gifts if the table is empty
+// Ensure database is created on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-   
     db.Database.EnsureCreated(); 
-    
-    if (!db.Gifts.Any())
-    {
-        db.Gifts.AddRange(
-            new Gift { Name = "Toaster", Description = "A silver 2-slice toaster", Price = 450.00m },
-            new Gift { Name = "Blender", Description = "High-speed kitchen blender", Price = 800.00m },
-            new Gift { Name = "Coffee Maker", Description = "Drip coffee machine", Price = 650.00m }
-        );
-        db.SaveChanges();
-    }
 }
 
-app.MapPost("/api/gift/claim/{id}", async (int id, AppDbContext db) =>
-{
-    var gift = await db.Gifts.FindAsync(id);
-    if (gift == null) return Results.NotFound();
+// ==========================================
+// EVENTS ENDPOINTS
+// ==========================================
 
-    gift.IsClaimed = true;
+// Get all events
+app.MapGet("/api/events", async (AppDbContext db) => 
+    await db.Events.Include(e => e.WishlistItems).Include(e => e.Invitations).ToListAsync());
+
+// Create a new event
+app.MapPost("/api/events", async (Event newEvent, AppDbContext db) =>
+{
+    if (string.IsNullOrEmpty(newEvent.Title) || string.IsNullOrEmpty(newEvent.UserId))
+        return Results.BadRequest("Title and UserId are required.");
+
+    db.Events.Add(newEvent);
+    await db.SaveChangesAsync();
+    
+    return Results.Ok(new { message = "Event created successfully!", eventId = newEvent.Id });
+});
+
+// ==========================================
+// WISHLIST ENDPOINTS (Per Event)
+// ==========================================
+
+// Get wishlist items for a specific event
+app.MapGet("/api/events/{eventId}/wishlist", async (int eventId, AppDbContext db) =>
+{
+    var items = await db.WishlistItems.Where(w => w.EventId == eventId).ToListAsync();
+    return Results.Ok(items);
+});
+
+// Add a wishlist item to an event
+app.MapPost("/api/events/{eventId}/wishlist", async (int eventId, WishlistItem item, AppDbContext db) =>
+{
+    var eventExists = await db.Events.AnyAsync(e => e.Id == eventId);
+    if (!eventExists) return Results.NotFound("Event not found.");
+
+    item.EventId = eventId;
+    item.IsClaimed = false;
+    
+    db.WishlistItems.Add(item);
+    await db.SaveChangesAsync();
+    
+    return Results.Ok(new { message = "Wishlist item added successfully!" });
+});
+
+// Claim a wishlist item
+app.MapPost("/api/wishlist/claim/{id}", async (int id, ClaimRequest request, AppDbContext db) =>
+{
+    var item = await db.WishlistItems.FindAsync(id);
+    if (item == null) return Results.NotFound("Gift not found.");
+
+    item.IsClaimed = true;
+    item.ClaimedByGuestName = request.GuestName;
     await db.SaveChangesAsync();
 
     return Results.Ok(new { message = "Gift claimed successfully!" });
 });
 
-// API endpoint to add a new gift
-app.MapPost("/api/gifts/add", async (Gift gift, AppDbContext db) =>
+// ==========================================
+// INVITATION / RSVP ENDPOINTS (Per Event)
+// ==========================================
+
+// Get invitations for an event
+app.MapGet("/api/events/{eventId}/invitations", async (int eventId, AppDbContext db) =>
 {
-    gift.IsClaimed = false; // New gifts are never claimed by default
-    db.Gifts.Add(gift);
-    await db.SaveChangesAsync();
-    return Results.Ok(new { message = "Gift added successfully!" });
+    var invitations = await db.Invitations.Where(i => i.EventId == eventId).ToListAsync();
+    return Results.Ok(invitations);
 });
 
-// API endpoint to delete a gift
-app.MapDelete("/api/gifts/delete/{id}", async (int id, AppDbContext db) =>
+// Create an invitation
+app.MapPost("/api/events/{eventId}/invitations", async (int eventId, Invitation invitation, AppDbContext db) =>
 {
-    var gift = await db.Gifts.FindAsync(id);
-    if (gift == null) return Results.NotFound();
+    var eventExists = await db.Events.AnyAsync(e => e.Id == eventId);
+    if (!eventExists) return Results.NotFound("Event not found.");
 
-    db.Gifts.Remove(gift);
+    invitation.EventId = eventId;
+    invitation.InviteGuid = Guid.NewGuid().ToString();
+
+    db.Invitations.Add(invitation);
     await db.SaveChangesAsync();
-    return Results.Ok(new { message = "Gift deleted successfully!" });
+
+    return Results.Ok(new { message = "Invitation created successfully!", inviteGuid = invitation.InviteGuid });
 });
 
 app.Run();
+
+// Helper record for claiming gifts with a guest name
+public record ClaimRequest(string GuestName);
