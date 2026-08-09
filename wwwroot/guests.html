@@ -3,70 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Guest List</title>
-    
+    <title>Wimab Event Hub - Advanced Guest & Seating Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://unpkg.com/lucide"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .bg-primary { background-color: #001f5b; }
+        .text-primary { color: #001f5b; }
+        .bg-accent { background-color: #c89a2c; }
+        .text-accent { color: #c89a2c; }
+        .border-accent { border-color: #c89a2c; }
+    </style>
 </head>
-<body class="bg-gray-50 p-8">
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">RSVP Guest List</h1>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="p-4 border-b">Name</th>
-                        <th class="p-4 border-b">Status</th>
-                        <th class="p-4 border-b">Dietary Needs</th>
-                        <th class="p-4 border-b">Plus One</th>
-                    </tr>
-                </thead>
-                <tbody id="guest-table" class="text-gray-600">
-                   
-                </tbody>
-            </table>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <a href="./dashboard.html" class="text-gray-400 hover:text-primary transition flex items-center space-x-1 text-sm font-medium">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+            <div class="font-bold text-primary text-lg">Guest, Seating & Messaging Hub</div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        
+        <!-- Header & Action Section -->
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-primary">Guest & Seating Arrangements</h1>
+                <p class="text-gray-500 text-sm mt-1">Manage venue details, table allocations, dietary needs, and send instant WhatsApp/Email invites.</p>
+            </div>
+            <div class="flex items-center space-x-3 w-full md:w-auto">
+                <button onclick="openVenueModal()" class="flex-1 md:flex-none bg-gray-100 text-gray-700 px-5 py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-gray-200 transition text-sm">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-accent"></i>
+                    <span>Set Venue Location</span>
+                </button>
+                <button onclick="openAddGuestModal()" class="flex-1 md:flex-none bg-primary text-white px-6 py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:text-primary transition shadow-md text-sm">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>Invite Guest</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Venue Details Display Banner -->
+        <div id="venueBanner" class="bg-blue-50 border border-blue-100 p-5 rounded-2xl mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-start space-x-3">
+                <div class="p-2.5 bg-white text-primary rounded-xl shadow-sm">
+                    <i data-lucide="compass" class="w-5 h-5 text-accent"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-primary text-sm uppercase tracking-wider">Current Event Venue</h4>
+                    <p id="venueText" class="text-gray-700 text-sm font-medium mt-0.5">No physical venue address set yet. Click "Set Venue Location".</p>
+                </div>
+            </div>
+            <a id="venueMapLink" href="#" target="_blank" class="hidden text-xs font-bold bg-white text-primary px-4 py-2 rounded-xl shadow-sm hover:bg-accent hover:text-primary transition flex items-center space-x-1">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>Open in Google Maps</span>
+            </a>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="relative w-full sm:w-96">
+                <i data-lucide="search" class="absolute left-4 top-3.5 w-4 h-4 text-gray-400"></i>
+                <input type="text" id="searchInput" onkeyup="filterGuests()" placeholder="Search guest or table number..." class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+            </div>
+            <div class="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                <button onclick="setStatusFilter('all')" id="filter-all" class="px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white transition">All Guests</button>
+                <button onclick="setStatusFilter('attending')" id="filter-attending" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Attending</button>
+                <button onclick="setStatusFilter('declined')" id="filter-declined" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Declined</button>
+            </div>
+        </div>
+
+        <!-- Guest Table Card -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="p-5 font-semibold">Guest Name & Contact</th>
+                            <th class="p-5 font-semibold">RSVP Status</th>
+                            <th class="p-5 font-semibold">Table Assignment</th>
+                            <th class="p-5 font-semibold">Dietary & Plus One</th>
+                            <th class="p-5 font-semibold text-right">Direct Messaging & Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guest-table" class="divide-y divide-gray-100 text-sm text-gray-600">
+                        <!-- Dynamic data loads here from backend -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Set Venue Modal -->
+    <div id="venueModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+            <button onclick="closeVenueModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">&times;</button>
+            <h3 class="text-2xl font-bold text-primary mb-2">Set Event Venue</h3>
+            <p class="text-gray-500 mb-6 text-sm">Provide the physical address or venue name for maps and invitations.</p>
+            
+            <form id="venueForm" onsubmit="saveVenue(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Venue Name & Address</label>
+                    <input type="text" id="venueInput" required placeholder="e.g., Rosebank Rooftop, 12 Gordan Ave, Johannesburg" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-accent text-primary py-3.5 rounded-xl font-bold hover:bg-yellow-600 transition shadow-md">
+                    Save Venue Details
+                </button>
+            </form>
         </div>
     </div>
 
-    <script>
+    <!-- Add Guest Modal -->
+    <div id="addGuestModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAddGuestModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">&times;</button>
+            <h3 class="text-2xl font-bold text-primary mb-2">Guest Invitation & Seating</h3>
+            <p class="text-gray-500 mb-6 text-sm">Register contact details, table allocation, and invite status.</p>
+            
+            <form id="addGuestForm" onsubmit="saveGuest(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">First Name</label>
+                        <input type="text" id="guestName" required placeholder="e.g., Thabo" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Surname</label>
+                        <input type="text" id="guestSurname" required placeholder="e.g., Mokoena" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">WhatsApp Mobile Number</label>
+                        <input type="text" id="guestPhone" placeholder="e.g., +27821234567" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Email Address</label>
+                        <input type="email" id="guestEmail" placeholder="e.g., thabo@mail.com" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">RSVP Status</label>
+                        <select id="guestStatus" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm bg-white">
+                            <option value="true">Attending</option>
+                            <option value="false">Declined</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Table Number</label>
+                        <input type="text" id="guestTableNum" placeholder="e.g., Table 4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Dietary Requirements</label>
+                    <input type="text" id="guestDiet" placeholder="e.g., Vegetarian / Halaal / None" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Plus One Name (Optional)</label>
+                    <input type="text" id="guestPlusOne" placeholder="e.g., Lerato Mokoena" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-accent text-primary py-3.5 rounded-xl font-bold hover:bg-yellow-600 transition shadow-md">
+                    Save Guest Seating
+                </button>
+            </form>
+        </div>
+    </div>
+<script>
+        lucide.createIcons();
 
-        
-    const password = prompt("Enter Admin Password:");
-    if (password !== "Guest2026") {
-    alert("Unauthorized Access!");
-    window.location.href = "/";
-}
-        // Fetch guests from the API
-        fetch('/api/guests')
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.getElementById('guest-table');
-                
-                if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">No RSVPs yet.</td></tr>`;
-                    return;
+        // Check user session and selected event ID
+        if (!localStorage.getItem('wimab_userid')) {
+            window.location.href = './landing.html';
+        }
+
+        const selectedEventId = localStorage.getItem('wimab_selected_event_id');
+        if (!selectedEventId) {
+            alert('No event selected. Returning to dashboard.');
+            window.location.href = './dashboard.html';
+        }
+
+        let currentFilter = 'all';
+        let allGuestsData = [];
+
+        // Load Venue
+        function loadVenue() {
+            const venue = localStorage.getItem('wimab_venue');
+            const venueText = document.getElementById('venueText');
+            const venueMapLink = document.getElementById('venueMapLink');
+
+            if (venue) {
+                venueText.innerText = venue;
+                venueMapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
+                venueMapLink.classList.remove('hidden');
+            }
+        }
+
+        function openVenueModal() {
+            document.getElementById('venueModal').classList.remove('hidden');
+        }
+
+        function closeVenueModal() {
+            document.getElementById('venueModal').classList.add('hidden');
+        }
+
+        function saveVenue(e) {
+            e.preventDefault();
+            const venueVal = document.getElementById('venueInput').value;
+            localStorage.setItem('wimab_venue', venueVal);
+            closeVenueModal();
+            loadVenue();
+        }
+
+        // Fetch Invitations Data from C# Backend API (/api/events/{eventId}/invitations)
+        async function loadGuests() {
+            loadVenue();
+            try {
+                const response = await fetch(`/api/events/${selectedEventId}/invitations`);
+                if (response.ok) {
+                    allGuestsData = await response.json();
+                    applyFiltersAndSearch();
+                } else {
+                    console.error('Failed to fetch guest invitations from backend');
                 }
+            } catch (error) {
+                console.error('Error connecting to guest API:', error);
+            }
+        }
 
-                tbody.innerHTML = data.map(g => `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="p-4 font-medium">${g.name} ${g.surname}</td>
-                        <td class="p-4">
-                            ${g.isAttending 
-                                ? '<i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i>' 
-                                : '<i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i>'}
+        function renderGuests(dataToRender) {
+            const tbody = document.getElementById('guest-table');
+            const venue = localStorage.getItem('wimab_venue') || 'Our Event Venue';
+            
+            if (dataToRender.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-gray-400">No guests found matching your criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dataToRender.map((g) => {
+                const whatsappMsg = encodeURIComponent(`Hi ${g.guestName}, you are cordially invited to our event at ${venue}! Ticket Token: ${g.inviteGuid}`);
+                const whatsappUrl = g.guestPhoneNumber ? `https://wa.me/${g.guestPhoneNumber.replace(/[^0-9]/g, '')}?text=${whatsappMsg}` : '#';
+
+                const emailSubject = encodeURIComponent("Your Event Invitation Details");
+                const emailBody = encodeURIComponent(`Hi ${g.guestName},\n\nYou are invited to our upcoming celebration!\n\nVenue: ${venue}\nTicket Token: ${g.inviteGuid}\n\nBest regards,\nHost`);
+                const emailUrl = g.guestEmail ? `mailto:${g.guestEmail}?subject=${emailSubject}&body=${emailBody}` : '#';
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="p-5">
+                            <div class="font-medium text-gray-900">${g.guestName}</div>
+                            <div class="text-xs text-gray-400 mt-0.5">${g.guestPhoneNumber || 'No phone'} • ${g.guestEmail || 'No email'}</div>
+                            <div class="text-[10px] font-mono text-accent mt-1">Token: ${g.inviteGuid.substring(0, 8)}...</div>
                         </td>
-                        <td class="p-4">${g.dietaryRequirements || '<span class="text-gray-300 italic">None</span>'}</td>
-                        <td class="p-4">${g.plusOneName || '<span class="text-gray-300 italic">None</span>'}</td>
+                        <td class="p-5">
+                            ${g.isAccepted 
+                                ? '<span class="inline-flex items-center space-x-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i><span>Attending</span></span>' 
+                                : '<span class="inline-flex items-center space-x-1.5 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-semibold"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i><span>Pending / Declined</span></span>'}
+                        </td>
+                        <td class="p-5 font-semibold text-primary">
+                            <span class="bg-amber-50 text-accent px-3 py-1 rounded-xl text-xs border border-amber-200">
+                                Event Linked
+                            </span>
+                        </td>
+                        <td class="p-5 text-xs text-gray-600">
+                            <div><strong>Plus One:</strong> ${g.bringingPlusOne ? 'Yes' : 'No'}</div>
+                            <div class="mt-0.5"><strong>Scanned/Attended:</strong> ${g.isAttended ? 'Yes' : 'No'}</div>
+                        </td>
+                        <td class="p-5 text-right space-x-2">
+                            <div class="inline-flex items-center space-x-1">
+                                <a href="${whatsappUrl}" target="_blank" title="Send WhatsApp Invite" class="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-xl transition ${!g.guestPhoneNumber ? 'opacity-40 pointer-events-none' : ''}">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </a>
+                                <a href="${emailUrl}" title="Send Email Invite" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition ${!g.guestEmail ? 'opacity-40 pointer-events-none' : ''}">
+                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
-                `).join('');
-                
-                
-                lucide.createIcons();
-            })
-            .catch(err => {
-                console.error("Error loading guests:", err);
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function openAddGuestModal() {
+            document.getElementById('addGuestModal').classList.remove('hidden');
+        }
+
+        function closeAddGuestModal() {
+            document.getElementById('addGuestModal').classList.add('hidden');
+        }
+
+        // Post new invitation via C# Backend API (`/api/events/{eventId}/invitations`)
+        async function saveGuest(e) {
+            e.preventDefault();
+            
+            const fullName = `${document.getElementById('guestName').value} ${document.getElementById('guestSurname').value}`;
+            
+            const newInvitation = {
+                eventId: parseInt(selectedEventId),
+                guestName: fullName,
+                guestPhoneNumber: document.getElementById('guestPhone').value,
+                guestEmail: document.getElementById('guestEmail').value,
+                isAccepted: document.getElementById('guestStatus').value === 'true',
+                bringingPlusOne: document.getElementById('guestPlusOne').value ? true : false,
+                isAttended: false
+            };
+
+            try {
+                const response = await fetch(`/api/events/${selectedEventId}/invitations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newInvitation)
+                });
+
+                if (response.ok) {
+                    closeAddGuestModal();
+                    document.getElementById('addGuestForm').reset();
+                    loadGuests(); // Reload data from SQLite database
+                } else {
+                    alert('Failed to save guest invitation.');
+                }
+            } catch (error) {
+                console.error('Error saving invitation:', error);
+                alert('Network error while saving invitation.');
+            }
+        }
+
+        function setStatusFilter(status) {
+            currentFilter = status;
+            ['all', 'attending', 'declined'].forEach(s => {
+                const btn = document.getElementById(`filter-${s}`);
+                if (s === status) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white transition";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition";
+                }
             });
+            applyFiltersAndSearch();
+        }
+
+        function filterGuests() {
+            applyFiltersAndSearch();
+        }
+
+        function applyFiltersAndSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = allGuestsData.filter(g => {
+                const fullName = (g.guestName || '').toLowerCase();
+                const matchesSearch = fullName.includes(searchTerm);
+                
+                if (currentFilter === 'attending') return matchesSearch && g.isAccepted;
+                if (currentFilter === 'declined') return matchesSearch && !g.isAccepted;
+                return matchesSearch;
+            });
+
+            renderGuests(filtered);
+        }
+
+        // Initial load
+        loadGuests();
     </script>
 </body>
 </html>

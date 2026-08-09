@@ -3,56 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wimab Event - Gift Registry</title>
+    <title>Wimab Event Hub - Gift Registry & Wishlist Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .bg-primary { background-color: #001f5b; }
+        .text-primary { color: #001f5b; }
+        .bg-accent { background-color: #c89a2c; }
+        .text-accent { color: #c89a2c; }
+        .border-accent { border-color: #c89a2c; }
+
+        /* Toast Notification Styling */
+        .toast-notification {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #001f5b;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 14px 20px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+            font-size: 14px;
+            font-weight: 500;
+            transition: visibility 0.3s, opacity 0.3s ease-in-out;
+            opacity: 0;
+            border: 1px solid #c89a2c;
+        }
+        .toast-notification.show {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-center mb-8">Gift Registry</h1>
-        <div id="gift-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast-notification">Added successfully!</div>
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <a href="./dashboard.html" class="text-gray-400 hover:text-primary transition flex items-center space-x-1 text-sm font-medium">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+            <div class="font-bold text-primary text-lg">Wishlist & Registry Manager</div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-primary">Event Gift Registry</h1>
+                <p class="text-gray-500 text-sm mt-1">Select items from our ZAR curated catalog or add custom gear/contributions.</p>
+            </div>
+            <button onclick="openAddItemModal()" class="w-full sm:w-auto bg-primary text-white px-6 py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-accent hover:text-primary transition shadow-md">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                <span>Add Registry Item</span>
+            </button>
+        </div>
+
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    </main>
+
+    <!-- ADD ITEM MODAL -->
+    <div id="addItemModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col">
+            <button onclick="closeAddItemModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 z-10">&times;</button>
             
+            <h3 class="text-2xl font-bold text-primary mb-1">Add to Registry</h3>
+            <p class="text-gray-500 mb-4 text-sm">Choose multiple items from the catalog or create a custom item.</p>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 mb-4">
+                <button onclick="switchTab('catalog')" id="tabCatalog" class="flex-1 pb-3 font-bold text-primary border-b-2 border-accent text-sm">Browse Catalog (ZAR)</button>
+                <button onclick="switchTab('custom')" id="tabCustom" class="flex-1 pb-3 font-semibold text-gray-400 text-sm">Custom / Other Option</button>
+            </div>
+
+            <!-- TAB 1: CATALOG -->
+            <div id="catalogSection" class="flex-1 overflow-y-auto space-y-4 pr-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex gap-2 mb-3 flex-wrap">
+                        <button onclick="filterCategory('All', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-primary text-white">All</button>
+                        <button onclick="filterCategory('Wedding', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">Weddings</button>
+                        <button onclick="filterCategory('Birthday', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">Birthdays</button>
+                        <button onclick="filterCategory('BBQ', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">BBQs</button>
+                        <button onclick="filterCategory('Baby', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">Baby Shower</button>
+                        <button onclick="filterCategory('Housewarming', event)" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600">Housewarming</button>
+                    </div>
+                    <div id="productCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Products injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Sticky Footer for Batch Adding Selected Items -->
+                <div class="sticky bottom-0 bg-white/90 backdrop-blur-md pt-4 pb-2 mt-4 border-t border-gray-100 flex justify-between items-center">
+                    <span id="selectedCountText" class="text-xs font-semibold text-gray-500">0 items selected</span>
+                    <button onclick="addSelectedCatalogItems()" class="bg-accent text-primary px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-yellow-600 transition shadow-sm">
+                        Add Selected to Event
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: CUSTOM ITEM -->
+            <div id="customSection" class="hidden flex-1 overflow-y-auto pr-1">
+                <form id="addItemForm" onsubmit="saveCustomItem(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Item Title</label>
+                        <input type="text" id="customName" required placeholder="e.g., Special Sound System / Homemade Salad" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Price (ZAR)</label>
+                            <input type="number" step="0.01" id="customPrice" placeholder="0.00" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Image URL (Optional)</label>
+                            <input type="url" id="customImage" placeholder="https://..." class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Description / Notes</label>
+                        <textarea id="customDesc" rows="2" placeholder="Write description or specific details..." class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-accent text-primary py-3.5 rounded-xl font-bold hover:bg-yellow-600 transition shadow-md">
+                        Save Custom Item to Registry
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-   <script>
-    function loadGifts() {
-        fetch('/api/gifts')
-            .then(response => response.json())
-            .then(data => {
-                const list = document.getElementById('gift-list');
-                list.innerHTML = ''; 
-                data.forEach(gift => {
-                    const card = document.createElement('div');
-                    card.className = "bg-white p-6 rounded-xl shadow-lg border border-gray-200";
-                    card.innerHTML = `
-                        <h2 class="text-xl font-semibold">${gift.name}</h2>
-                        <p class="text-gray-600 mt-2">${gift.description}</p>
-                        <p class="text-blue-600 font-bold mt-4">R${gift.price}</p>
-                        <button onclick="claimGift(${gift.id})" 
-                                class="mt-4 w-full py-2 rounded-lg transition ${gift.isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}"
-                                ${gift.isClaimed ? 'disabled' : ''}>
-                            ${gift.isClaimed ? 'Claimed' : 'Claim Gift'}
-                        </button>
-                    `;
-                    list.appendChild(card);
-                });
-            });
-    }
+    <script>
+        lucide.createIcons();
 
-    function claimGift(id) {
-    fetch(`/api/gift/claim/${id}`, { method: 'POST' })
-        .then(response => {
-            if (response.ok) {
-                alert("Thank you! Your gift has been claimed successfully."); 
-                loadGifts(); 
+        const backendUrl = 'http://127.0.0.1:5166';
+        const eventId = localStorage.getItem('wimab_current_eventid') || 1;
+
+        if (!localStorage.getItem('wimab_userid')) {
+            window.location.href = './landing.html';
+        } else {
+            loadRegistry();
+            loadProductsCatalog();
+        }
+
+        function showToast(message = "Added successfully!") {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "toast-notification show";
+            setTimeout(() => {
+                toast.className = "toast-notification";
+            }, 3000);
+        }
+
+        function openAddItemModal() {
+            document.getElementById('addItemModal').classList.remove('hidden');
+        }
+
+        function closeAddItemModal() {
+            document.getElementById('addItemModal').classList.add('hidden');
+        }
+
+        function switchTab(tab) {
+            const catalogSec = document.getElementById('catalogSection');
+            const customSec = document.getElementById('customSection');
+            const tabCat = document.getElementById('tabCatalog');
+            const tabCus = document.getElementById('tabCustom');
+
+            if (tab === 'catalog') {
+                catalogSec.classList.remove('hidden');
+                customSec.classList.add('hidden');
+                tabCat.className = "flex-1 pb-3 font-bold text-primary border-b-2 border-accent text-sm";
+                tabCus.className = "flex-1 pb-3 font-semibold text-gray-400 text-sm";
             } else {
-                alert("Oops! Something went wrong. Please try again.");
+                catalogSec.classList.add('hidden');
+                customSec.classList.remove('hidden');
+                tabCus.className = "flex-1 pb-3 font-bold text-primary border-b-2 border-accent text-sm";
+                tabCat.className = "flex-1 pb-3 font-semibold text-gray-400 text-sm";
             }
-        });
-}
+        }
 
-    
-    loadGifts();
-</script>
+        async function loadRegistry() {
+            try {
+                const response = await fetch(`${backendUrl}/api/events/${eventId}/wishlist`);
+                const items = await response.json();
+                const container = document.getElementById('registryList');
+
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full bg-white p-12 rounded-3xl text-center border border-dashed border-gray-200">
+                            <div class="w-12 h-12 bg-amber-50 text-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="gift" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-700 text-lg">No items added to registry yet</h3>
+                            <p class="text-gray-500 text-sm mt-1">Click "Add Registry Item" above to choose gifts or custom items.</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    return;
+                }
+
+                container.innerHTML = items.map(item => `
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-40 object-cover rounded-2xl mb-4" alt="${item.name}">` : ''}
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="bg-amber-50 text-accent px-3 py-1 rounded-full text-xs font-semibold">
+                                    ${item.price ? new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(item.price) : 'Free Contribution'}
+                                </span>
+                                <button onclick="deleteItem(${item.id})" class="text-gray-400 hover:text-red-500 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <h3 class="text-lg font-bold text-primary mb-1">${item.name}</h3>
+                            <p class="text-gray-600 text-xs mb-4">${item.description || 'No additional notes.'}</p>
+                        </div>
+                        <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+                            <span class="text-xs font-medium ${item.isClaimed ? 'text-green-600 bg-green-50 px-3 py-1 rounded-full' : 'text-gray-500'}">
+                                ${item.isClaimed ? `Claimed by ${item.claimedByGuestName || 'Guest'}` : 'Available'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) {
+                console.error("Failed to load wishlist items:", err);
+            }
+        }
+
+        async function loadProductsCatalog(category = 'All') {
+            try {
+                const response = await fetch(`${backendUrl}/api/products?category=${category}`);
+                const products = await response.json();
+                const grid = document.getElementById('productCatalogGrid');
+
+                grid.innerHTML = products.map(p => `
+                    <div class="border border-gray-100 p-4 rounded-2xl flex flex-col justify-between hover:border-accent transition bg-gray-50/50 relative">
+                        <label class="absolute top-3 right-3 z-10 cursor-pointer bg-white/80 p-1.5 rounded-lg shadow-sm">
+                            <input type="checkbox" value="${p.id}" onchange="updateSelectedCount()" class="catalog-checkbox w-4 h-4 text-primary rounded focus:ring-primary">
+                        </label>
+                        <div>
+                            <img src="${p.imageUrl}" class="w-full h-32 object-cover rounded-xl mb-3" alt="${p.title}">
+                            <h4 class="font-bold text-primary text-sm mb-1">${p.title}</h4>
+                            <p class="text-gray-500 text-xs mb-3 line-clamp-2">${p.description}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-200/60">
+                            <span class="font-bold text-primary text-sm">${new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(p.price)}</span>
+                        </div>
+                    </div>
+                `).join('');
+                updateSelectedCount();
+            } catch (err) {
+                console.error("Failed to load products catalog:", err);
+            }
+        }
+
+        function updateSelectedCount() {
+            const checkedBoxes = document.querySelectorAll('.catalog-checkbox:checked');
+            const count = checkedBoxes.length;
+            document.getElementById('selectedCountText').innerText = `${count} item${count === 1 ? '' : 's'} selected`;
+        }
+
+        function filterCategory(category, event) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600";
+            });
+            event.target.className = "cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-primary text-white";
+            loadProductsCatalog(category);
+        }
+
+        async function addSelectedCatalogItems() {
+            const checkedBoxes = document.querySelectorAll('.catalog-checkbox:checked');
+            if (checkedBoxes.length === 0) {
+                alert('Please select at least one item from the catalog.');
+                return;
+            }
+
+            const itemsPayload = Array.from(checkedBoxes).map(cb => ({ productId: parseInt(cb.value) }));
+
+            try {
+                const res = await fetch(`${backendUrl}/api/events/${eventId}/wishlist`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(itemsPayload)
+                });
+
+                if (res.ok) {
+                    showToast("Wishlist items added successfully!");
+                    closeAddItemModal();
+                    loadRegistry();
+                } else {
+                    alert('Failed to add products to registry.');
+                }
+            } catch (err) {
+                console.error("Error adding products:", err);
+            }
+        }
+
+        async function saveCustomItem(e) {
+            e.preventDefault();
+            const customData = [{
+                name: document.getElementById('customName').value,
+                price: parseFloat(document.getElementById('customPrice').value) || 0,
+                imageUrl: document.getElementById('customImage').value,
+                description: document.getElementById('customDesc').value
+            }];
+
+            try {
+                const res = await fetch(`${backendUrl}/api/events/${eventId}/wishlist`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(customData)
+                });
+
+                if (res.ok) {
+                    showToast("Custom item added successfully!");
+                    closeAddItemModal();
+                    document.getElementById('addItemForm').reset();
+                    loadRegistry();
+                } else {
+                    alert('Failed to save custom item.');
+                }
+            } catch (err) {
+                console.error("Error saving custom item:", err);
+            }
+        }
+
+        async function deleteItem(id) {
+            if (confirm('Remove this item from the registry?')) {
+                try {
+                    await fetch(`${backendUrl}/api/events/${eventId}/wishlist/${id}`, { method: 'DELETE' });
+                    showToast("Item removed successfully!");
+                    loadRegistry();
+                } catch (err) {
+                    console.error("Error deleting item:", err);
+                }
+            }
+        }
+    </script>
 </body>
 </html>

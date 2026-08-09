@@ -3,88 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Manage Gifts</title>
+    <title>Event Check-In & Ticket Scanner</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html5-qrcode library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 </head>
-<body class="bg-gray-50 p-8">
-    <div class="max-w-4xl mx-auto space-y-8">
-       
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h1 class="text-2xl font-bold mb-6">Add New Gift</h1>
-            <div class="space-y-4">
-                <input id="name" type="text" placeholder="Gift Name" class="w-full p-2 border rounded">
-                <input id="desc" type="text" placeholder="Description" class="w-full p-2 border rounded">
-                <input id="price" type="number" placeholder="Price" class="w-full p-2 border rounded">
-                <button onclick="addGift()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Add Gift</button>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- App Container -->
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Live Event Check-In System</h1>
+                <p class="text-sm text-slate-500">Scanning real-time guest passes submitted via RSVP.</p>
+            </div>
+            <button onclick="openScannerModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow">
+                <i data-lucide="scan-line" class="w-5 h-5"></i>
+                Open Scanner
+            </button>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-sm font-medium text-slate-500">Total RSVPs</p>
+                <p id="stat-total" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-sm font-medium text-slate-500">Checked In</p>
+                <p id="stat-checked" class="text-2xl font-bold text-emerald-600 mt-1">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-sm font-medium text-slate-500">Pending Arrival</p>
+                <p id="stat-pending" class="text-2xl font-bold text-amber-600 mt-1">0</p>
             </div>
         </div>
 
-       
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-bold mb-4">Current Gifts</h2>
-            <div id="admin-gift-list" class="space-y-2">
-               
+        <!-- Guest List Section -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h2 class="text-lg font-semibold text-slate-900">Real-Time Guest Directory</h2>
+                <div class="w-full sm:w-auto relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    <input type="text" id="search-input" oninput="filterGuests()" placeholder="Search by name or code..." class="w-full sm:w-64 pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/75 text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-slate-100">
+                            <th class="py-3 px-6">Guest Name</th>
+                            <th class="py-3 px-6">Ticket Code</th>
+                            <th class="py-3 px-6">Status</th>
+                            <th class="py-3 px-6 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guest-table-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- Populated Dynamically from localStorage -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <!-- Scanner Modal -->
+    <div id="scanner-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 flex flex-col items-center relative">
+            <button onclick="closeScannerModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Scan Real Ticket QR Code</h3>
+            <p class="text-xs text-slate-500 mb-6 text-center">Center the guest's ticket pass inside the window</p>
+            
+            <div id="reader" class="w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-50"></div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- Application Script -->
     <script>
+        let guests = [];
+        let html5QrCode = null;
 
-        
-    const password = prompt("Enter Admin Password:");
-if (password !== "Wimab2026") { 
-    alert("Unauthorized Access!");
-    window.location.href = "/";
-}
-        // Fetch and display gifts
-        function loadAdminGifts() {
-            fetch('/api/gifts')
-                .then(r => r.json())
-                .then(data => {
-                    const list = document.getElementById('admin-gift-list');
-                    list.innerHTML = data.map(g => `
-                        <div class="flex justify-between items-center p-3 border rounded">
-                            <div>
-                                <span class="font-semibold">${g.name}</span>
-                                <span class="text-gray-500 ml-2">R${g.price}</span>
-                            </div>
-                            <button onclick="deleteGift(${g.id})" class="text-red-600 hover:text-red-800 font-bold">Delete</button>
-                        </div>
-                    `).join('');
-                });
-        }
+        // Initialize System & Listen for Cross-Page Updates
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGuestsFromStorage();
+            updateGuestTable();
+            updateDashboardStats();
 
-        // Add a gift
-        function addGift() {
-            const gift = {
-                name: document.getElementById('name').value,
-                description: document.getElementById('desc').value,
-                price: parseFloat(document.getElementById('price').value)
-            };
-
-            fetch('/api/gifts/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(gift)
-            }).then(() => {
-                alert('Gift added!');
-                document.getElementById('name').value = ''; 
-                document.getElementById('desc').value = '';
-                document.getElementById('price').value = '';
-                loadAdminGifts(); 
+            // Auto-refresh if guests RSVP on another active tab
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'wimab_guests') {
+                    loadGuestsFromStorage();
+                    updateGuestTable();
+                    updateDashboardStats();
+                }
             });
-        }
+        });
 
-        // Delete a gift
-        function deleteGift(id) {
-            if(confirm('Are you sure you want to delete this gift?')) {
-                fetch(`/api/gifts/delete/${id}`, { method: 'DELETE' })
-                    .then(() => loadAdminGifts());
+        function loadGuestsFromStorage() {
+            const saved = localStorage.getItem('wimab_guests');
+            if (saved) {
+                try { 
+                    guests = JSON.parse(saved); 
+                } catch (e) { 
+                    console.error("Failed to parse guest records:", e); 
+                    guests = [];
+                }
+            } else {
+                guests = [];
             }
         }
 
-        
-        loadAdminGifts();
+        function saveGuestsToStorage() {
+            localStorage.setItem('wimab_guests', JSON.stringify(guests));
+        }
+
+        // Update Dashboard Analytics Counters
+        function updateDashboardStats() {
+            const attendingGuests = guests.filter(g => g.isAttending !== false);
+            const total = attendingGuests.length;
+            const checkedIn = attendingGuests.filter(g => g.hasAttended).length;
+            const pending = total - checkedIn;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-checked').textContent = checkedIn;
+            document.getElementById('stat-pending').textContent = pending;
+        }
+
+        // Render Guest Table Layout
+        function updateGuestTable(filteredGuests = null) {
+            const displayList = filteredGuests || guests;
+            const tbody = document.getElementById('guest-table-body');
+            tbody.innerHTML = '';
+
+            if (displayList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400">No RSVP guest records found yet. Have guests submit their invites!</td></tr>`;
+                return;
+            }
+
+            displayList.forEach(guest => {
+                const isCheckedIn = guest.hasAttended;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-medium text-slate-900">
+                        ${guest.name} ${guest.surname || ''}
+                        ${guest.plusOneName ? `<span class="block text-xs text-slate-400">+1: ${guest.plusOneName}</span>` : ''}
+                    </td>
+                    <td class="py-4 px-6 font-mono text-slate-500">${guest.ticketCode || 'N/A'}</td>
+                    <td class="py-4 px-6">
+                        ${isCheckedIn 
+                            ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/50"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>Checked In (${guest.checkedInTime || 'Venue'})</span>`
+                            : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50"><i data-lucide="clock" class="w-3.5 h-3.5"></i>Pending</span>`
+                        }
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="toggleCheckIn('${guest.ticketCode}')" class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${isCheckedIn ? 'border-slate-200 text-slate-600 hover:bg-slate-100' : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100'}">
+                            ${isCheckedIn ? 'Undo Check-In' : 'Check In'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // Filter search input helper
+        function filterGuests() {
+            const query = document.getElementById('search-input').value.toUpperCase();
+            const filtered = guests.filter(g => 
+                (g.name && g.name.toUpperCase().includes(query)) || 
+                (g.surname && g.surname.toUpperCase().includes(query)) || 
+                (g.ticketCode && g.ticketCode.toUpperCase().includes(query))
+            );
+            updateGuestTable(filtered);
+        }
+
+        // Manual check-in status toggle via Ticket Code
+        function toggleCheckIn(ticketCode) {
+            const guest = guests.find(g => g.ticketCode === ticketCode);
+            if (!guest) return;
+
+            guest.hasAttended = !guest.hasAttended;
+            guest.checkedInTime = guest.hasAttended ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+
+            saveGuestsToStorage();
+            updateGuestTable();
+            updateDashboardStats();
+            showNotification(`Updated status for ${guest.name}`, "success");
+        }
+
+        // Safe Camera Hardware Cleanup Handler
+        async function stopScannerSafely() {
+            if (html5QrCode) {
+                try {
+                    if (html5QrCode.isScanning) {
+                        await html5QrCode.stop();
+                    }
+                    await html5QrCode.clear();
+                } catch (err) {
+                    console.error("Failed to stop scanner cleanly:", err);
+                }
+                html5QrCode = null;
+            }
+        }
+
+        // Open Scanner Modal & Launch Camera Stream Safely
+        async function openScannerModal() {
+            document.getElementById('scanner-modal').classList.remove('hidden');
+            
+            setTimeout(async () => {
+                await stopScannerSafely();
+                html5QrCode = new Html5Qrcode("reader");
+                const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+                try {
+                    await html5QrCode.start(
+                        { facingMode: "environment" }, 
+                        config, 
+                        (decodedText) => processTicketScan(decodedText),
+                        (errorMessage) => { /* Ignore frame parsing noise */ }
+                    );
+                } catch (err) {
+                    console.error("Error starting QR scanner:", err);
+                    showNotification("Unable to access camera. Please verify device permissions.", "error");
+                }
+            }, 100);
+        }
+
+        // Close Scanner Modal
+        async function closeScannerModal() {
+            await stopScannerSafely();
+            document.getElementById('scanner-modal').classList.add('hidden');
+        }
+
+        // Real QR Processing Engine matched against actual public RSVP codes
+        async function processTicketScan(decodedText) {
+            const scannedData = decodedText.trim();
+            
+            let targetCode = scannedData;
+            if (scannedData.includes('[')) {
+                const match = scannedData.match(/\[(.*?)\]/);
+                if (match) targetCode = match[1];
+            }
+            targetCode = targetCode.toUpperCase();
+
+            loadGuestsFromStorage();
+
+            let foundGuest = guests.find(g => g.ticketCode && g.ticketCode.toUpperCase() === targetCode);
+
+            if (!foundGuest) {
+                showNotification(`Invalid Pass: Code "${targetCode}" not recognized.`, "error");
+                return;
+            }
+
+            if (foundGuest.hasAttended) {
+                showNotification(`${foundGuest.name} was already checked in at ${foundGuest.checkedInTime || 'the venue'}!`, "warning");
+                return;
+            }
+
+            foundGuest.hasAttended = true;
+            foundGuest.checkedInTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            saveGuestsToStorage();
+            updateGuestTable();
+            updateDashboardStats();
+
+            showNotification(`Successfully Checked-In: ${foundGuest.name} ${foundGuest.surname || ''}`, "success");
+        }
+
+        // Notification Toast System using Lucide Icons
+        function showNotification(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-emerald-600 text-white";
+            let iconName = "check-circle";
+            if (type === "error") {
+                bgClass = "bg-rose-600 text-white";
+                iconName = "alert-circle";
+            }
+            if (type === "warning") {
+                bgClass = "bg-amber-500 text-white";
+                iconName = "alert-triangle";
+            }
+
+            toast.className = `px-4 py-3 rounded-xl shadow-lg text-sm font-medium transition-all transform translate-y-2 opacity-0 flex items-center gap-2.5 ${bgClass}`;
+            toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
     </script>
 </body>
 </html>

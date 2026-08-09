@@ -1,111 +1,147 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WimabEventApp.Data;
 using WimabEventApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// SQLite database connection
+// --------------------------------------------------
+// Database
+// --------------------------------------------------
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=wimab_event.db"));
 
+
+// --------------------------------------------------
+// ASP.NET Core Identity
+// --------------------------------------------------
+
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        // Password requirements
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 8;
+
+        // User requirements
+        options.User.RequireUniqueEmail = true;
+
+        // Account lockout protection
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+
+        // Email verification will become important later
+        options.SignIn.RequireConfirmedEmail = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
+// --------------------------------------------------
+// Controllers + JSON
+// --------------------------------------------------
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+
+// --------------------------------------------------
+// Swagger
+// --------------------------------------------------
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
+// --------------------------------------------------
+// Build application
+// --------------------------------------------------
+
 var app = builder.Build();
 
-app.UseDefaultFiles(); 
-app.UseStaticFiles();
 
-// Ensure database is created on startup
-using (var scope = app.Services.CreateScope())
+// --------------------------------------------------
+// Development tools
+// --------------------------------------------------
+
+if (app.Environment.IsDevelopment())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated(); 
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-// ==========================================
-// EVENTS ENDPOINTS
-// ==========================================
 
-// Get all events
-app.MapGet("/api/events", async (AppDbContext db) => 
-    await db.Events.Include(e => e.WishlistItems).Include(e => e.Invitations).ToListAsync());
+// --------------------------------------------------
+// HTTP pipeline
+// --------------------------------------------------
 
-// Create a new event
-app.MapPost("/api/events", async (Event newEvent, AppDbContext db) =>
+app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+
+// --------------------------------------------------
+// Authentication & Authorization
+// --------------------------------------------------
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+// --------------------------------------------------
+// Database initialization
+// --------------------------------------------------
+
+using (var scope = app.Services.CreateScope())
 {
-    if (string.IsNullOrEmpty(newEvent.Title) || string.IsNullOrEmpty(newEvent.UserId))
-        return Results.BadRequest("Title and UserId are required.");
+    var services = scope.ServiceProvider;
 
-    db.Events.Add(newEvent);
-    await db.SaveChangesAsync();
-    
-    return Results.Ok(new { message = "Event created successfully!", eventId = newEvent.Id });
-});
+    var context = services.GetRequiredService<AppDbContext>();
 
-// ==========================================
-// WISHLIST ENDPOINTS (Per Event)
-// ==========================================
+    // Apply pending EF Core migrations
+    context.Database.Migrate();
 
-// Get wishlist items for a specific event
-app.MapGet("/api/events/{eventId}/wishlist", async (int eventId, AppDbContext db) =>
-{
-    var items = await db.WishlistItems.Where(w => w.EventId == eventId).ToListAsync();
-    return Results.Ok(items);
-});
+    // Seed initial application data
+    DbInitializer.Initialize(context);
+}
 
-// Add a wishlist item to an event
-app.MapPost("/api/events/{eventId}/wishlist", async (int eventId, WishlistItem item, AppDbContext db) =>
-{
-    var eventExists = await db.Events.AnyAsync(e => e.Id == eventId);
-    if (!eventExists) return Results.NotFound("Event not found.");
 
-    item.EventId = eventId;
-    item.IsClaimed = false;
-    
-    db.WishlistItems.Add(item);
-    await db.SaveChangesAsync();
-    
-    return Results.Ok(new { message = "Wishlist item added successfully!" });
-});
+// --------------------------------------------------
+// API Controllers
+// --------------------------------------------------
 
-// Claim a wishlist item
-app.MapPost("/api/wishlist/claim/{id}", async (int id, ClaimRequest request, AppDbContext db) =>
-{
-    var item = await db.WishlistItems.FindAsync(id);
-    if (item == null) return Results.NotFound("Gift not found.");
+app.MapControllers();
 
-    item.IsClaimed = true;
-    item.ClaimedByGuestName = request.GuestName;
-    await db.SaveChangesAsync();
 
-    return Results.Ok(new { message = "Gift claimed successfully!" });
-});
-
-// ==========================================
-// INVITATION / RSVP ENDPOINTS (Per Event)
-// ==========================================
-
-// Get invitations for an event
-app.MapGet("/api/events/{eventId}/invitations", async (int eventId, AppDbContext db) =>
-{
-    var invitations = await db.Invitations.Where(i => i.EventId == eventId).ToListAsync();
-    return Results.Ok(invitations);
-});
-
-// Create an invitation
-app.MapPost("/api/events/{eventId}/invitations", async (int eventId, Invitation invitation, AppDbContext db) =>
-{
-    var eventExists = await db.Events.AnyAsync(e => e.Id == eventId);
-    if (!eventExists) return Results.NotFound("Event not found.");
-
-    invitation.EventId = eventId;
-    invitation.InviteGuid = Guid.NewGuid().ToString();
-
-    db.Invitations.Add(invitation);
-    await db.SaveChangesAsync();
-
-    return Results.Ok(new { message = "Invitation created successfully!", inviteGuid = invitation.InviteGuid });
-});
+// --------------------------------------------------
+// Start application
+// --------------------------------------------------
 
 app.Run();
-
-// Helper record for claiming gifts with a guest name
-public record ClaimRequest(string GuestName);
