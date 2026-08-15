@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Event Details | Wimab Events</title>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --navy: #0b1f3a;
+            --navy-light: #132d50;
+            --navy-soft: #eef3f8;
+            --gold: #c9a227;
+            --gold-light: #e5c65a;
+            --white: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #15803d;
+            --danger: #b91c1c;
+            --shadow: 0 10px 30px rgba(11, 31, 58, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f8fb;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            min-height: 72px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .brand-icon {
+            color: var(--gold);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--gold-light);
+        }
+
+        .container {
+            width: min(1180px, 92%);
+            margin: 0 auto;
+            padding: 40px 0 70px;
+        }
+
+        .loading {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 4px solid #e5e7eb;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-box {
+            display: none;
+            background: #fff;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius);
+            padding: 35px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .error-icon {
+            color: var(--danger);
+            margin-bottom: 15px;
+        }
+
+        .error-box h2 {
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .error-box p {
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .primary-button:hover {
+            background: var(--navy-light);
+        }
+
+        .event-content {
+            display: none;
+        }
+
+        .event-hero {
+            background: var(--navy);
+            color: white;
+            border-radius: 22px;
+            padding: 42px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .event-hero::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 162, 39, 0.25);
+            right: -80px;
+            top: -100px;
+        }
+
+        .event-hero::before {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 162, 39, 0.18);
+            right: 70px;
+            bottom: -120px;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(201, 162, 39, 0.15);
+            border: 1px solid rgba(201, 162, 39, 0.4);
+            color: var(--gold-light);
+            border-radius: 30px;
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .event-title {
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.1;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .event-description {
+            max-width: 720px;
+            color: #dbe5f0;
+            line-height: 1.7;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .event-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .meta-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .meta-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--navy-soft);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 11px;
+            flex-shrink: 0;
+        }
+
+        .meta-content {
+            min-width: 0;
+        }
+
+        .meta-content span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .meta-content strong {
+            color: var(--navy);
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .section {
+            margin-top: 38px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            color: var(--navy);
+            font-size: 23px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            color: var(--gold);
+        }
+
+        .wishlist-count {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .wishlist-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .wishlist-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(11, 31, 58, 0.12);
+        }
+
+        .wishlist-image {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background: var(--navy-soft);
+        }
+
+        .wishlist-content {
+            padding: 18px;
+        }
+
+        .wishlist-content h3 {
+            color: var(--navy);
+            font-size: 17px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .wishlist-description {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .wishlist-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .price {
+            color: var(--navy);
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 20px;
+            padding: 6px 9px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status.available {
+            color: var(--success);
+            background: #ecfdf3;
+        }
+
+        .status.claimed {
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px dashed #d1d5db;
+            border-radius: var(--radius);
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state svg {
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            color: var(--navy);
+            margin-bottom: 7px;
+        }
+
+        .invitation-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .invitation-count {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .invitation-count-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--navy-soft);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .invitation-count strong {
+            display: block;
+            color: var(--navy);
+            font-size: 22px;
+        }
+
+        .invitation-count span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            .event-meta {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .wishlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                min-height: 65px;
+                padding: 0 4%;
+            }
+
+            .brand {
+                font-size: 18px;
+            }
+
+            .back-link span {
+                display: none;
+            }
+
+            .container {
+                width: 92%;
+                padding-top: 25px;
+            }
+
+            .event-hero {
+                padding: 28px 22px;
+                border-radius: 17px;
+            }
+
+            .event-title {
+                font-size: 31px;
+            }
+
+            .event-description {
+                font-size: 14px;
+            }
+
+            .event-meta {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .meta-card {
+                padding: 16px;
+            }
+
+            .wishlist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wishlist-image {
+                height: 220px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .error-box {
+                padding: 28px 20px;
+            }
+
+            .wishlist-bottom {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <a href="./dashboard.html" class="brand">
+            <i data-lucide="calendar-heart" class="brand-icon"></i>
+            Wimab Events
+        </a>
+
+        <a href="./events.html" class="back-link">
+            <i data-lucide="arrow-left"></i>
+            <span>Back to Events</span>
+        </a>
+
+    </nav>
+
+    <main class="container">
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading event...</p>
+        </div>
+
+        <div id="errorBox" class="error-box">
+
+            <i data-lucide="circle-alert" size="42" class="error-icon"></i>
+
+            <h2>Unable to load event</h2>
+
+            <p id="errorMessage">
+                We couldn't find this event.
+            </p>
+
+            <a href="./events.html" class="primary-button">
+                <i data-lucide="arrow-left"></i>
+                Back to Events
+            </a>
+
+        </div>
+
+        <div id="eventContent" class="event-content">
+
+            <section class="event-hero">
+
+                <div class="category-badge">
+                    <i data-lucide="tag" size="14"></i>
+                    <span id="eventCategory">General</span>
+                </div>
+
+                <h1 class="event-title" id="eventTitle">
+                    Event Title
+                </h1>
+
+                <p class="event-description" id="eventDescription">
+                    Event description
+                </p>
+
+            </section>
+
+            <section class="event-meta">
+
+                <div class="meta-card">
+
+                    <div class="meta-icon">
+                        <i data-lucide="calendar-days"></i>
+                    </div>
+
+                    <div class="meta-content">
+                        <span>Date</span>
+                        <strong id="eventDate">—</strong>
+                    </div>
+
+                </div>
+
+                <div class="meta-card">
+
+                    <div class="meta-icon">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+
+                    <div class="meta-content">
+                        <span>Venue</span>
+                        <strong id="eventVenue">—</strong>
+                    </div>
+
+                </div>
+
+                <div class="meta-card">
+
+                    <div class="meta-icon">
+                        <i data-lucide="palette"></i>
+                    </div>
+
+                    <div class="meta-content">
+                        <span>Theme</span>
+                        <strong id="eventTheme">—</strong>
+                    </div>
+
+                </div>
+
+                <div class="meta-card">
+
+                    <div class="meta-icon">
+                        <i data-lucide="shirt"></i>
+                    </div>
+
+                    <div class="meta-content">
+                        <span>Attire</span>
+                        <strong id="eventAttire">—</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h2 class="section-title">
+                        <i data-lucide="gift"></i>
+                        Wishlist
+                    </h2>
+
+                    <span class="wishlist-count" id="wishlistCount">
+                        0 items
+                    </span>
+
+                </div>
+
+                <div id="wishlistContainer" class="wishlist-grid"></div>
+
+            </section>
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h2 class="section-title">
+                        <i data-lucide="users"></i>
+                        Invitations
+                    </h2>
+
+                </div>
+
+                <div class="invitation-box">
+
+                    <div class="invitation-count">
+
+                        <div class="invitation-count-icon">
+                            <i data-lucide="user-round-check"></i>
+                        </div>
+
+                        <div>
+                            <strong id="invitationCount">0</strong>
+                            <span>people invited to this event</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <script>
+        const API_URL = "/api/events";
+
+        const loading = document.getElementById("loading");
+        const errorBox = document.getElementById("errorBox");
+        const errorMessage = document.getElementById("errorMessage");
+        const eventContent = document.getElementById("eventContent");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get("id");
+
+        function formatDate(dateString) {
+            if (!dateString) {
+                return "Not specified";
+            }
+
+            const date = new Date(dateString);
+
+            if (isNaN(date.getTime())) {
+                return dateString;
+            }
+
+            return date.toLocaleDateString("en-ZA", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            });
+        }
+
+        function formatPrice(price) {
+            if (price === null || price === undefined) {
+                return "Price not specified";
+            }
+
+            return new Intl.NumberFormat("en-ZA", {
+                style: "currency",
+                currency: "ZAR"
+            }).format(price);
+        }
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function renderWishlist(items) {
+            const container = document.getElementById("wishlistContainer");
+            const count = document.getElementById("wishlistCount");
+
+            if (!items || items.length === 0) {
+                count.textContent = "0 items";
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="gift" size="38"></i>
+                        <h3>No wishlist items yet</h3>
+                        <p>This event doesn't have any gifts on its wishlist.</p>
+                    </div>
+                `;
+
+                lucide.createIcons();
+                return;
+            }
+
+            count.textContent =
+                `${items.length} ${items.length === 1 ? "item" : "items"}`;
+
+            container.innerHTML = items.map(item => {
+
+                const imageUrl =
+                    item.imageUrl ||
+                    "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=500";
+
+                const statusClass =
+                    item.isClaimed ? "claimed" : "available";
+
+                const statusText =
+                    item.isClaimed ? "Claimed" : "Available";
+
+                return `
+                    <article class="wishlist-card">
+
+                        <img
+                            class="wishlist-image"
+                            src="${escapeHtml(imageUrl)}"
+                            alt="${escapeHtml(item.name || "Wishlist item")}"
+                            loading="lazy"
+                        >
+
+                        <div class="wishlist-content">
+
+                            <h3>
+                                ${escapeHtml(item.name || "Wishlist item")}
+                            </h3>
+
+                            <p class="wishlist-description">
+                                ${escapeHtml(
+                                    item.description ||
+                                    "No description provided."
+                                )}
+                            </p>
+
+                            <div class="wishlist-bottom">
+
+                                <span class="price">
+                                    ${formatPrice(item.price)}
+                                </span>
+
+                                <span class="status ${statusClass}">
+                                    <i
+                                        data-lucide="circle-check"
+                                        size="13">
+                                    </i>
+                                    ${statusText}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                `;
+
+            }).join("");
+
+            lucide.createIcons();
+        }
+
+        async function loadEvent() {
+
+            if (!eventId) {
+                showError(
+                    "No event ID was provided in the URL."
+                );
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch(`${API_URL}/${encodeURIComponent(eventId)}`);
+
+                if (!response.ok) {
+
+                    if (response.status === 404) {
+                        throw new Error(
+                            "This event could not be found."
+                        );
+                    }
+
+                    throw new Error(
+                        `Server returned status ${response.status}.`
+                    );
+                }
+
+                const event = await response.json();
+
+                displayEvent(event);
+
+            } catch (error) {
+
+                console.error(
+                    "Error loading event:",
+                    error
+                );
+
+                showError(
+                    error.message ||
+                    "Something went wrong while loading the event."
+                );
+            }
+        }
+
+        function displayEvent(event) {
+
+            document.getElementById("eventTitle").textContent =
+                event.title || "Untitled Event";
+
+            document.getElementById("eventCategory").textContent =
+                event.category || "General";
+
+            document.getElementById("eventDescription").textContent =
+                event.description || "No description provided.";
+
+            document.getElementById("eventDate").textContent =
+                formatDate(event.eventDate);
+
+            document.getElementById("eventVenue").textContent =
+                event.venueLocation || "Not specified";
+
+            document.getElementById("eventTheme").textContent =
+                event.theme || "Standard";
+
+            document.getElementById("eventAttire").textContent =
+                event.attire || "Casual";
+
+            renderWishlist(
+                event.wishlistItems || []
+            );
+
+            const invitations =
+                event.invitations || [];
+
+            document.getElementById("invitationCount").textContent =
+                invitations.length;
+
+            loading.style.display = "none";
+            errorBox.style.display = "none";
+            eventContent.style.display = "block";
+
+            lucide.createIcons();
+        }
+
+        function showError(message) {
+
+            loading.style.display = "none";
+
+            eventContent.style.display = "none";
+
+            errorMessage.textContent = message;
+
+            errorBox.style.display = "block";
+
+            lucide.createIcons();
+        }
+
+        lucide.createIcons();
+
+        loadEvent();
+    </script>
+
+</body>
+</html>

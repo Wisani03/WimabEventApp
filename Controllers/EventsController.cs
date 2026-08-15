@@ -21,30 +21,79 @@ public class EventsController : ControllerBase
             .Include(e => e.WishlistItems)
             .Include(e => e.Invitations)
             .ToListAsync();
+
         return Ok(events);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetEvent(int id)
+    {
+        var eventItem = await _context.Events
+            .Include(e => e.WishlistItems)
+            .Include(e => e.Invitations)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (eventItem == null)
+        {
+            return NotFound(new
+            {
+                message = "Event not found."
+            });
+        }
+
+        return Ok(eventItem);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateEvent([FromBody] Event newEvent)
     {
-        if (string.IsNullOrEmpty(newEvent.Title) || string.IsNullOrEmpty(newEvent.UserId))
-            return BadRequest("Title and UserId are required.");
+        if (string.IsNullOrWhiteSpace(newEvent.Title))
+        {
+            return BadRequest(new
+            {
+                message = "Event title is required."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(newEvent.UserId))
+        {
+            return BadRequest(new
+            {
+                message = "User ID is required."
+            });
+        }
 
         _context.Events.Add(newEvent);
+
         await _context.SaveChangesAsync();
-        
-        return Ok(new { message = "Event created successfully!", eventId = newEvent.Id });
+
+        return Ok(new
+        {
+            message = "Event created successfully!",
+            eventId = newEvent.Id
+        });
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEvent(int id)
     {
-        var ev = await _context.Events.FindAsync(id);
-        if (ev == null) return NotFound("Event not found.");
+        var eventItem = await _context.Events.FindAsync(id);
 
-        _context.Events.Remove(ev);
+        if (eventItem == null)
+        {
+            return NotFound(new
+            {
+                message = "Event not found."
+            });
+        }
+
+        _context.Events.Remove(eventItem);
+
         await _context.SaveChangesAsync();
-        
-        return Ok(new { message = "Event deleted successfully!" });
+
+        return Ok(new
+        {
+            message = "Event deleted successfully!"
+        });
     }
 }

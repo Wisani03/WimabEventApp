@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Create Event | Wimab</title>
+
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+
+        :root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+
+            --gold: #F59E0B;
+            --gold-dark: #D97706;
+            --gold-light: #FEF3C7;
+
+            --white: #FFFFFF;
+            --background: #F8FAFC;
+            --border: #E2E8F0;
+
+            --text: #0F172A;
+            --muted: #64748B;
+
+            --success: #16A34A;
+            --danger: #DC2626;
+
+            --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+
+        .sidebar {
+            width: 250px;
+
+            background: var(--navy);
+            color: var(--white);
+
+            padding: 25px 18px;
+
+            position: fixed;
+
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            z-index: 1000;
+        }
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 0 12px 30px;
+
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            background: var(--gold);
+            color: var(--navy);
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .nav-title {
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            color: #94A3B8;
+
+            padding: 0 12px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+
+            gap: 5px;
+        }
+
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px;
+
+            color: #CBD5E1;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            transition: 0.2s;
+        }
+
+
+        .nav-links a:hover {
+            background: var(--navy-light);
+            color: var(--white);
+        }
+
+
+        .nav-links a.active {
+            background: var(--gold);
+            color: var(--navy);
+
+            font-weight: 600;
+        }
+
+
+        .nav-links i {
+            width: 18px;
+            height: 18px;
+        }
+
+
+
+        .main {
+            margin-left: 250px;
+
+            width: calc(100% - 250px);
+
+            min-height: 100vh;
+        }
+
+
+
+        .mobile-header {
+            display: none;
+        }
+
+
+
+
+        .topbar {
+            height: 75px;
+
+            background: var(--white);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 35px;
+        }
+
+
+        .page-title h1 {
+            font-size: 24px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .page-title p {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: var(--gold-light);
+
+            color: var(--gold-dark);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 700;
+        }
+
+
+        .profile-name {
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+
+        .content {
+            padding: 35px;
+
+            max-width: 1000px;
+
+            margin: 0 auto;
+        }
+
+
+        .back-link {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .back-link:hover {
+            color: var(--gold-dark);
+        }
+
+
+        .back-link i {
+            width: 17px;
+        }
+
+
+      
+
+        .form-card {
+            background: var(--white);
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+
+        .form-header {
+            background: var(--navy);
+
+            color: var(--white);
+
+            padding: 30px;
+        }
+
+
+        .form-header-content {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .form-header-icon {
+            width: 48px;
+            height: 48px;
+
+            background: var(--gold);
+
+            color: var(--navy);
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .form-header-icon i {
+            width: 24px;
+            height: 24px;
+        }
+
+
+        .form-header h2 {
+            font-size: 22px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .form-header p {
+            color: #CBD5E1;
+
+            font-size: 13px;
+        }
+
+
+
+        .form-body {
+            padding: 30px;
+        }
+
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+
+        .section-title {
+            font-size: 15px;
+
+            font-weight: 700;
+
+            margin-bottom: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .section-title i {
+            width: 18px;
+            height: 18px;
+
+            color: var(--gold-dark);
+        }
+
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        label {
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: var(--text);
+        }
+
+
+        .required {
+            color: var(--danger);
+        }
+
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            padding: 12px 13px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            background: var(--white);
+
+            color: var(--text);
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.2s;
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color: var(--gold);
+
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+        }
+
+
+        textarea {
+            resize: vertical;
+
+            min-height: 120px;
+        }
+
+
+        .field-help {
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+
+        .form-footer {
+
+            border-top: 1px solid var(--border);
+
+            padding-top: 25px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 12px;
+        }
+
+
+        .btn {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 20px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            transition: 0.2s;
+        }
+
+
+        .btn i {
+            width: 17px;
+            height: 17px;
+        }
+
+
+        .btn-secondary {
+
+            background: #F1F5F9;
+
+            color: var(--text);
+        }
+
+
+        .btn-secondary:hover {
+
+            background: #E2E8F0;
+        }
+
+
+        .btn-primary {
+
+            background: var(--gold);
+
+            color: var(--navy);
+        }
+
+
+        .btn-primary:hover {
+
+            background: var(--gold-dark);
+
+            color: var(--white);
+        }
+
+
+        .btn-primary:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+
+
+        .alert {
+
+            display: none;
+
+            padding: 13px 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 13px;
+        }
+
+
+        .alert.error {
+
+            background: #FEE2E2;
+
+            color: #991B1B;
+
+            border: 1px solid #FECACA;
+        }
+
+
+        .alert.success {
+
+            background: #DCFCE7;
+
+            color: #166534;
+
+            border: 1px solid #BBF7D0;
+        }
+
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+
+            .main {
+
+                margin-left: 0;
+
+                width: 100%;
+            }
+
+
+            .mobile-header {
+
+                display: flex;
+
+                height: 65px;
+
+                background: var(--navy);
+
+                color: var(--white);
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                padding: 0 18px;
+            }
+
+
+            .mobile-logo {
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 8px;
+
+                font-weight: 700;
+            }
+
+
+            .mobile-logo-icon {
+
+                width: 32px;
+                height: 32px;
+
+                background: var(--gold);
+
+                color: var(--navy);
+
+                border-radius: 8px;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+            }
+
+
+            .mobile-menu {
+
+                background: none;
+
+                border: none;
+
+                color: var(--white);
+            }
+
+
+            .topbar {
+
+                height: auto;
+
+                padding: 18px;
+            }
+
+
+            .profile {
+
+                display: none;
+            }
+
+
+            .content {
+
+                padding: 20px;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .content {
+
+                padding: 15px;
+            }
+
+
+            .form-header {
+
+                padding: 22px;
+            }
+
+
+            .form-body {
+
+                padding: 20px;
+            }
+
+
+            .form-header h2 {
+
+                font-size: 19px;
+            }
+
+
+            .form-footer {
+
+                flex-direction: column-reverse;
+            }
+
+
+            .form-footer .btn {
+
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+
+                <i data-lucide="calendar-heart"></i>
+
+            </div>
+
+            Wimab
+
+        </div>
+
+
+        <div class="nav-title">
+
+            Main Menu
+
+        </div>
+
+
+        <nav class="nav-links">
+
+            <a href="./dashboard.html">
+
+                <i data-lucide="layout-dashboard"></i>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="./events.html" class="active">
+
+                <i data-lucide="calendar-days"></i>
+
+                Events
+
+            </a>
+
+
+            <a href="./guests.html">
+
+                <i data-lucide="users"></i>
+
+                Guests
+
+            </a>
+
+
+            <a href="./gifts.html">
+
+                <i data-lucide="gift"></i>
+
+                Wishlist
+
+            </a>
+
+
+            <a href="./invite.html">
+
+                <i data-lucide="mail"></i>
+
+                Invitations
+
+            </a>
+
+
+            <a href="./admin.html">
+
+                <i data-lucide="settings"></i>
+
+                Administration
+
+            </a>
+
+
+            <a href="./landing.html">
+
+                <i data-lucide="log-out"></i>
+
+                Logout
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <main class="main">
+
+
+
+        <div class="mobile-header">
+
+            <div class="mobile-logo">
+
+                <div class="mobile-logo-icon">
+
+                    <i data-lucide="calendar-heart"></i>
+
+                </div>
+
+                Wimab
+
+            </div>
+
+
+            <i data-lucide="menu"></i>
+
+        </div>
+
+
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>Create Event</h1>
+
+                <p>
+                    Set up the details for your new event.
+                </p>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div class="profile-avatar">
+                    W
+                </div>
+
+                <div class="profile-name">
+                    Wimab User
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="content">
+
+
+            <a href="./events.html" class="back-link">
+
+                <i data-lucide="arrow-left"></i>
+
+                Back to Events
+
+            </a>
+
+
+            <div class="form-card">
+
+
+
+                <div class="form-header">
+
+                    <div class="form-header-content">
+
+                        <div class="form-header-icon">
+
+                            <i data-lucide="calendar-plus"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2>Create a New Event</h2>
+
+                            <p>
+                                Add the basic information about your celebration.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-body">
+
+
+                    <div id="alertBox" class="alert"></div>
+
+
+                    <form id="createEventForm">
+
+
+
+                        <div class="form-section">
+
+                            <div class="section-title">
+
+                                <i data-lucide="info"></i>
+
+                                Event Information
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+
+
+                                <div class="form-group full">
+
+                                    <label for="eventTitle">
+
+                                        Event Name
+                                        <span class="required">*</span>
+
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="eventTitle"
+                                        name="eventTitle"
+                                        placeholder="e.g. Wisani's Birthday Celebration"
+                                        required
+                                    >
+
+                                    <span class="field-help">
+
+                                        Give your event a clear and memorable name.
+
+                                    </span>
+
+                                </div>
+
+
+
+                                <div class="form-group">
+
+                                    <label for="eventCategory">
+
+                                        Category
+                                        <span class="required">*</span>
+
+                                    </label>
+
+                                    <select
+                                        id="eventCategory"
+                                        name="eventCategory"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Select category
+                                        </option>
+
+                                        <option value="Birthday">
+                                            Birthday
+                                        </option>
+
+                                        <option value="Wedding">
+                                            Wedding
+                                        </option>
+
+                                        <option value="Baby Shower">
+                                            Baby Shower
+                                        </option>
+
+                                        <option value="Graduation">
+                                            Graduation
+                                        </option>
+
+                                        <option value="Anniversary">
+                                            Anniversary
+                                        </option>
+
+                                        <option value="Corporate">
+                                            Corporate
+                                        </option>
+
+                                        <option value="Party">
+                                            Party
+                                        </option>
+
+                                        <option value="General">
+                                            General
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+
+                                <div class="form-group">
+
+                                    <label for="eventDate">
+
+                                        Event Date
+                                        <span class="required">*</span>
+
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="eventDate"
+                                        name="eventDate"
+                                        required
+                                    >
+
+                                </div>
+
+
+
+                                <div class="form-group full">
+
+                                    <label for="eventVenue">
+
+                                        Venue / Location
+                                        <span class="required">*</span>
+
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="eventVenue"
+                                        name="eventVenue"
+                                        placeholder="e.g. Sandton Convention Centre"
+                                        required
+                                    >
+
+                                </div>
+
+
+
+                                <div class="form-group full">
+
+                                    <label for="eventDescription">
+
+                                        Description
+
+                                    </label>
+
+                                    <textarea
+                                        id="eventDescription"
+                                        name="eventDescription"
+                                        placeholder="Tell your guests a little about the event..."
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-section">
+
+                            <div class="section-title">
+
+                                <i data-lucide="palette"></i>
+
+                                Event Style
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+
+
+                                <div class="form-group">
+
+                                    <label for="eventTheme">
+
+                                        Theme
+
+                                    </label>
+
+                                    <select
+                                        id="eventTheme"
+                                        name="eventTheme"
+                                    >
+
+                                        <option value="Standard">
+                                            Standard
+                                        </option>
+
+                                        <option value="Elegant">
+                                            Elegant
+                                        </option>
+
+                                        <option value="Modern">
+                                            Modern
+                                        </option>
+
+                                        <option value="Classic">
+                                            Classic
+                                        </option>
+
+                                        <option value="Luxury">
+                                            Luxury
+                                        </option>
+
+                                        <option value="Minimal">
+                                            Minimal
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+
+                                <div class="form-group">
+
+                                    <label for="eventAttire">
+
+                                        Dress Code
+
+                                    </label>
+
+                                    <select
+                                        id="eventAttire"
+                                        name="eventAttire"
+                                    >
+
+                                        <option value="Casual">
+                                            Casual
+                                        </option>
+
+                                        <option value="Smart Casual">
+                                            Smart Casual
+                                        </option>
+
+                                        <option value="Formal">
+                                            Formal
+                                        </option>
+
+                                        <option value="Black Tie">
+                                            Black Tie
+                                        </option>
+
+                                        <option value="Traditional">
+                                            Traditional
+                                        </option>
+
+                                        <option value="No Dress Code">
+                                            No Dress Code
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-footer">
+
+                            <a
+                                href="./events.html"
+                                class="btn btn-secondary"
+                            >
+
+                                <i data-lucide="x"></i>
+
+                                Cancel
+
+                            </a>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                id="createButton"
+                            >
+
+                                <i data-lucide="calendar-plus"></i>
+
+                                Create Event
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    lucide.createIcons();
+
+
+    
+
+    const userId = localStorage.getItem("wimab_userid");
+
+
+    if (!userId) {
+
+        window.location.href = "./landing.html";
+
+    }
+
+
+  
+
+    const form =
+        document.getElementById("createEventForm");
+
+    const createButton =
+        document.getElementById("createButton");
+
+    const alertBox =
+        document.getElementById("alertBox");
+
+
+  
+
+    function showAlert(message, type) {
+
+        alertBox.textContent = message;
+
+        alertBox.className = "alert " + type;
+
+        alertBox.style.display = "block";
+
+    }
+
+
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+
+        createButton.disabled = true;
+
+
+        createButton.innerHTML = `
+
+            <i data-lucide="loader-circle"></i>
+
+            Creating...
+
+        `;
+
+        lucide.createIcons();
+
+
+        const newEvent = {
+
+            userId: userId,
+
+            title:
+                document.getElementById("eventTitle").value.trim(),
+
+            category:
+                document.getElementById("eventCategory").value,
+
+            description:
+                document.getElementById("eventDescription").value.trim()
+                || "No description provided.",
+
+            venueLocation:
+                document.getElementById("eventVenue").value.trim(),
+
+            theme:
+                document.getElementById("eventTheme").value,
+
+            attire:
+                document.getElementById("eventAttire").value,
+
+            eventDate:
+                document.getElementById("eventDate").value
+
+        };
+
+
+        try {
+
+            const response = await fetch(
+                "/api/events",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(newEvent)
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    result ||
+                    "Failed to create event."
+                );
+
+            }
+
+
+          
+
+            const createdEventId =
+                result.eventId;
+
+
+            localStorage.setItem(
+                "wimab_selected_event_id",
+                createdEventId
+            );
+
+
+            
+
+            showAlert(
+                "Event created successfully!",
+                "success"
+            );
+
+
+            form.reset();
+
+
+
+            setTimeout(function () {
+
+                window.location.href =
+                    "./events.html";
+
+            }, 900);
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Error creating event:",
+                error
+            );
+
+
+            showAlert(
+                error.message ||
+                "Something went wrong while creating the event.",
+                "error"
+            );
+
+
+            createButton.disabled = false;
+
+
+            createButton.innerHTML = `
+
+                <i data-lucide="calendar-plus"></i>
+
+                Create Event
+
+            `;
+
+            lucide.createIcons();
+
+        }
+
+    });
+
+</script>
+
+
+</body>
+
+</html>
