@@ -691,6 +691,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get("id");
 
+        if (eventId) {
+            localStorage.setItem("wimab_current_eventid", eventId);
+        }
+
         function formatDate(dateString) {
             if (!dateString) {
                 return "Not specified";

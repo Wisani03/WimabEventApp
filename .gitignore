@@ -12,3 +12,6 @@ obj/
 # Ignore sensitive settings
 appsettings.Development.json
 appsettings.json
+# WimabEvent runtime-uploaded custom gift images
+wwwroot/images/custom-gifts/*
+!wwwroot/images/custom-gifts/.gitkeep

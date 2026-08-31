@@ -16,17 +16,25 @@ namespace WimabEventApp.Controllers
             _context = context;
         }
 
-        // GET: api/products (Fetches the pre-seeded catalog, with optional category filtering)
-        [HttpGet("products")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] string? category)
-        {
-            var query = _context.Products.AsQueryable();
-            if (!string.IsNullOrEmpty(category) && category != "All")
-            {
-                query = query.Where(p => p.OccasionCategory == category);
-            }
-            return await query.ToListAsync();
-        }
+       [HttpGet("products")]
+public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
+    [FromQuery] string? category,
+    [FromQuery] string? giftType)
+{
+    var query = _context.Products.AsQueryable();
+
+    if (!string.IsNullOrEmpty(category) && category != "All")
+    {
+        query = query.Where(p => p.OccasionCategory == category);
+    }
+
+    if (!string.IsNullOrEmpty(giftType) && giftType != "All")
+    {
+        query = query.Where(p => p.GiftType == giftType);
+    }
+
+    return await query.ToListAsync();
+}
 
         // GET: api/events/{eventId}/wishlist (Fetches all wishlist items for a specific event - Host view)
         [HttpGet("events/{eventId}/wishlist")]
