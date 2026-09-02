@@ -20,6 +20,7 @@ namespace WimabEventApp.Models
         public string Theme { get; set; } = string.Empty;
         public string Attire { get; set; } = string.Empty;
         public DateTime EventDate { get; set; }
+        public DateTime? RsvpDeadline { get; set; }
 
         // Navigation properties initialized to prevent null warnings
         public ICollection<WishlistItem> WishlistItems { get; set; } = new List<WishlistItem>();

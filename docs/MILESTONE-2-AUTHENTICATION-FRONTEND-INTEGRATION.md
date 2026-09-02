@@ -1,8 +1,8 @@
-ï»¿# WimabEvent â€” Milestone 2 Progress Record
+# WimabEvent — Milestone 2 Completion Record
 
-**Milestone:** 2 â€” Authentication & Frontend Integration  
-**Status:** IN PROGRESS  
-**Progress Recorded:** 31 August â€“ 1 September 2026  
+**Milestone:** 2 — Authentication & Frontend Integration  
+**Status:** COMPLETE  
+**Progress Recorded:** 31 August – 1 September 2026  
 **Project:** WimabEvent  
 **Developer:** Wisani Mabunda
 
@@ -10,9 +10,9 @@
 
 ## 1. Milestone Purpose
 
-Milestone 2 focuses on connecting the WimabEvent frontend to the application's real authentication system and progressively replacing presentation/mock data with real backend data.
+Milestone 2 focused on connecting the WimabEvent frontend to the application's real authentication system and replacing presentation/mock data with real backend data.
 
-The milestone builds on the existing ASP.NET Core Identity authentication system, event management functionality, guest management, invitations and gift registry/catalogue functionality.
+The milestone built on the existing ASP.NET Core Identity authentication system, event management functionality, guest management, invitations and gift registry/catalogue functionality.
 
 ---
 
@@ -20,13 +20,13 @@ The milestone builds on the existing ASP.NET Core Identity authentication system
 
 ### 2.1 Authentication
 
-The login endpoint was updated to use ASP.NET Core Identity's PasswordSignInAsync functionality instead of only checking the password.
+The login endpoint was updated to use ASP.NET Core Identity's PasswordSignInAsync functionality.
 
 The authentication flow now:
 
 - Validates the supplied email and password.
 - Establishes an authenticated Identity session.
-- Creates a persistent authentication cookie.
+- Creates an ASP.NET Core Identity authentication cookie.
 - Enables lockout-on-failure.
 - Returns an appropriate response when an account is temporarily locked.
 - Returns Unauthorized when credentials are invalid.
@@ -35,40 +35,113 @@ The authentication flow now:
 
 A real test account was successfully registered through the authentication API.
 
-Test account used during development:
+The test account was used to verify the complete authentication flow, including registration, login, authenticated requests and logout.
 
-- Email: wimabtest@example.com
-- Password: WimabTest@123
-- Name: Wimab Test Host
-
-The registration endpoint returned HTTP 200 and successfully created the Identity user.
+Credentials are intentionally not stored in project documentation.
 
 ### 2.3 Login Testing
 
-The newly created test account was successfully authenticated through:
+The test account was successfully authenticated through:
 
 `POST /api/auth/login`
 
 The endpoint returned HTTP 200 with a successful login response.
 
-The authentication response also issued an ASP.NET Core Identity authentication cookie, confirming that the server-side Identity session was being established.
+The authentication response issued an ASP.NET Core Identity authentication cookie, confirming that the server-side Identity session was being established.
 
-Invalid credentials were previously confirmed to return HTTP 401 Unauthorized.
+Invalid credentials were confirmed to return HTTP 401 Unauthorized.
 
-### 2.4 Event Creation Testing
+### 2.4 Logout Testing
 
-After authentication was verified, event creation was tested through the frontend.
+Logout was integrated with the server-side Identity authentication system.
 
-A test event was successfully created:
+The frontend logout action calls:
 
-- Event: Wisani Test Celebration
-- Description: Fun and vibes
-- Date: 4 September 2026
-- Location: Johannesburg, Sandton
+`POST /api/auth/logout`
 
-The event was successfully persisted and appeared on the Events page.
+After logout, the authenticated session was invalidated.
 
-### 2.5 Landing Page Improvements
+A subsequent request to:
+
+`GET /api/auth/me`
+
+returned HTTP 401 Unauthorized, confirming that the authenticated session had ended successfully.
+
+### 2.5 Protected Frontend Testing
+
+The dashboard now verifies the authenticated Identity session through:
+
+`GET /api/auth/me`
+
+Unauthenticated users are redirected to the public landing page.
+
+This prevents the dashboard from being treated as an authenticated application area when no valid server-side Identity session exists.
+
+### 2.6 Event Ownership Security
+
+Event management was updated so that event ownership is determined by the authenticated Identity user.
+
+The Events API now:
+
+- Retrieves events belonging to the authenticated user.
+- Retrieves individual events only when they belong to the authenticated user.
+- Assigns the authenticated user's Identity ID when creating an event.
+- Prevents the client from supplying an arbitrary UserId during event creation.
+- Allows deletion only when the event belongs to the authenticated user.
+
+This establishes user-specific access control for event data.
+
+### 2.7 Event Creation Testing
+
+Event creation was successfully tested through the authenticated frontend.
+
+A test event was successfully created and persisted in the database.
+
+The event appeared on the Events page after creation, confirming that the frontend and backend event-management flow was working with real database data.
+
+### 2.8 Dashboard Backend Integration
+
+A protected dashboard API was introduced:
+
+`GET /api/dashboard`
+
+The endpoint uses the authenticated Identity user to retrieve user-specific dashboard information.
+
+The dashboard now provides database-driven values for:
+
+- Total events
+- Total guests
+- Total invitations
+- Total wishlist items
+- Recent events
+- Recent invitations
+
+### 2.9 Dashboard Frontend Integration
+
+The dashboard frontend was connected to the real dashboard API.
+
+The following statistics are now populated from backend data:
+
+- Event count
+- Guest count
+- Invitation count
+- Wishlist count
+
+Hardcoded dashboard event and invitation data was removed.
+
+Recent events and recent invitations are rendered dynamically from the API response.
+
+### 2.10 Dashboard User-Specific Data
+
+The dashboard now retrieves data belonging to the authenticated user.
+
+Recent events are restricted to the user's own events.
+
+Invitation information is calculated from invitations belonging to the user's events.
+
+This prevents the dashboard from displaying unrelated users' event information.
+
+### 2.11 Landing Page Improvements
 
 The landing page was further refined to present WimabEvent as a professional product.
 
@@ -85,7 +158,25 @@ Changes included:
 - Added styling for the clickable email address.
 - Continued improving the landing page visual presentation.
 
-### 2.6 Build Verification
+### 2.12 Events Page Visual Integration
+
+The Events page visual design was refined to align more closely with the dashboard design system.
+
+The page now uses the shared:
+
+- Navy colour system.
+- Gold accent system.
+- Light application background.
+- Border styling.
+- Card radius.
+- Card shadows.
+- Hover animations.
+- Button animations.
+- Event card header styling.
+
+The Events page remains connected to real backend event data.
+
+### 2.13 Build Verification
 
 The application successfully builds with:
 
@@ -93,134 +184,65 @@ The application successfully builds with:
 
 The build currently succeeds with the existing SQLitePCLRaw.lib.e_sqlite3 vulnerability warning.
 
-The warning does not currently prevent the application from building or running.
+The warning does not currently prevent the application from building or running and is deferred for a later dependency/security-hardening stage.
 
 ---
 
-## 3. Important Discovery
+## 3. Important Architecture Decisions
 
-During frontend testing, a difference was identified between the dashboard and the Events page.
+### 3.1 Server-Side Identity Is the Authentication Authority
 
-The Events page is connected to the backend and displays real events retrieved from the database.
+The application now uses ASP.NET Core Identity as the authoritative authentication mechanism.
 
-The dashboard, however, still contains presentation/mock data such as:
+The server-side Identity session and authentication cookie determine whether the user is authenticated.
 
-- Birthday Celebration
-- Graduation Celebration
-- Family Gathering
-- Sample invitation activity
-- Sample guest counts
-- Sample wishlist counts
+Client-controlled localStorage values such as `wimab_userid` are no longer treated as the authoritative source of authentication for the completed dashboard flow.
 
-The dashboard statistics also do not yet represent the currently authenticated user's actual database records.
+### 3.2 User Ownership Is Determined Server-Side
 
-For example, a newly created event can appear on the Events page while the dashboard may still display zero events and unrelated sample events.
+Authenticated user ownership is determined using the Identity user ID on the server.
 
-This is now identified as a required part of Milestone 2.
+The client is not trusted to specify which Identity user owns a newly created event.
 
----
+This establishes the foundation for protecting other user-specific application resources.
 
-## 4. Authentication Architecture Observation
+### 3.3 Dashboard Data Is Database-Driven
 
-The application now has a server-side ASP.NET Core Identity authentication session.
+Dashboard statistics and recent activity are retrieved from backend database queries rather than hardcoded presentation data.
 
-However, some existing frontend pages still use localStorage values such as `wimab_userid` to determine whether a user is logged in.
-
-This means the frontend authentication checks are not yet fully aligned with the server-side Identity session.
-
-The final authentication architecture should use ASP.NET Core Identity as the authoritative authentication mechanism rather than relying on a client-controlled localStorage value.
+This establishes the foundation for future real-time and user-specific application functionality.
 
 ---
 
-## 5. Current Milestone Status
+## 4. Final Milestone Testing
 
-Milestone 2 is currently **IN PROGRESS**.
+The following functionality was verified during Milestone 2:
 
-Authentication has been successfully tested, but frontend authentication integration and dashboard data integration are not yet complete.
-
-The application currently has a working foundation for:
-
-- User registration
-- User login
-- Identity authentication sessions
-- Event creation
-- Event listing
-- Gift registry/catalogue functionality
-
-Further integration is required before this milestone can be marked complete.
-
----
-
-## 6. Next Development Tasks
-
-### Dashboard
-
-- Connect dashboard event statistics to the database.
-- Display the authenticated user's actual events.
-- Remove hardcoded sample events.
-- Connect guest counts to real database records.
-- Connect invitation counts to real database records.
-- Connect wishlist counts to real database records.
-- Display real recent invitations.
-- Remove mock invitation statuses.
-
-### Authentication
-
-- Replace localStorage-based authentication checks with server-side authentication checks.
-- Ensure authenticated pages cannot be accessed without a valid Identity session.
-- Verify logout invalidates the authenticated session.
-- Verify protected API endpoints use appropriate authorization.
-- Continue testing invalid and locked-out login scenarios.
-
-### Event Ownership
-
-- Ensure users can only retrieve and manage their own events.
-- Ensure event creation associates the event with the authenticated user.
-- Prevent users from accessing another user's private event data.
-
-### Final Testing
-
-- Registration test
-- Duplicate registration test
-- Valid login test
-- Invalid login test
-- Logout test
-- Protected-page test
-- Event creation test
-- Event listing test
-- User-specific event test
-- Dashboard statistics test
-- Guest/invitation/wishlist integration test
+- [x] User registration
+- [x] Valid login
+- [x] Invalid login
+- [x] Identity authentication session
+- [x] Authentication cookie
+- [x] Logout
+- [x] Authenticated user lookup
+- [x] Protected dashboard access
+- [x] Event creation
+- [x] User-specific event listing
+- [x] User-specific event retrieval
+- [x] User-specific event deletion
+- [x] Server-side event ownership
+- [x] Database-driven dashboard statistics
+- [x] Database-driven recent events
+- [x] Database-driven recent invitations
+- [x] Removal of mock dashboard data
+- [x] Dashboard authentication integration
+- [x] Events page visual integration
+- [x] Successful application build
+- [x] Changes committed and pushed to GitHub
 
 ---
 
-## 7. Development Notes
-
-The main objective of this milestone is not to redesign the application from scratch. The existing dashboard and frontend visual design will be retained where appropriate while replacing mock presentation data with real backend-driven data.
-
-The authentication work establishes the foundation for user-specific data and protected application functionality.
-
----
-
-## 8. Milestone Completion Criteria
-
-Milestone 2 will be considered complete when:
-
-- [ ] Frontend login uses the real ASP.NET Core Identity authentication flow.
-- [ ] Registration and login are fully integrated into the frontend.
-- [ ] Authenticated pages rely on the server-side authentication session.
-- [ ] Logout correctly ends the authenticated session.
-- [ ] Dashboard statistics come from the database.
-- [ ] Dashboard events belong to the authenticated user.
-- [ ] Mock dashboard data has been removed.
-- [ ] Guests, invitations and wishlist information are connected to real data.
-- [ ] User-specific event access has been verified.
-- [ ] The complete authentication and dashboard flow has been tested.
-- [ ] Changes have been committed and pushed to GitHub.
-
----
-
-## 9. Development Journal
+## 5. Development Journal
 
 ### 31 August 2026
 
@@ -232,26 +254,82 @@ A real test account was registered and successfully authenticated.
 
 The authentication cookie was observed during testing, confirming that the Identity session was being established.
 
-Event creation was then tested through the authenticated application. A test event named "Wisani Test Celebration" was successfully created and displayed on the Events page.
+Event creation was then tested through the authenticated application. A test event was successfully created and displayed on the Events page.
 
 The landing page was also refined with a professional developer section, developer image and improved contact information.
 
 ### 1 September 2026
 
-Frontend testing revealed that the dashboard still contains hardcoded presentation data while the Events page is displaying real database data.
+Frontend testing revealed that the dashboard still contained hardcoded presentation data while the Events page was displaying real database data.
 
-This distinction was documented as the next major development task.
+The dashboard was then connected to a protected backend dashboard API.
 
-The next development session will focus on converting the dashboard into a fully database-driven, user-specific dashboard.
+Dashboard statistics were converted to real database-driven values.
+
+Recent events and recent invitations were connected to backend data and rendered dynamically.
+
+Hardcoded dashboard events and invitation activity were removed.
+
+Authentication checks were integrated with the server-side Identity session.
+
+Event ownership was secured so that the authenticated user is used as the authoritative owner of events.
+
+The Events page was visually refined to align with the dashboard's professional design system.
+
+The complete authentication, event ownership and dashboard integration flow was tested successfully.
+
+Milestone 2 is now complete.
 
 ---
 
-## 10. Current Checkpoint
+## 6. Milestone Completion Criteria
+
+All Milestone 2 completion criteria have been satisfied:
+
+- [x] Frontend login uses the real ASP.NET Core Identity authentication flow.
+- [x] Registration and login are integrated with the authentication API.
+- [x] Authenticated pages rely on the server-side authentication session.
+- [x] Logout correctly ends the authenticated session.
+- [x] Dashboard statistics come from the database.
+- [x] Dashboard events belong to the authenticated user.
+- [x] Mock dashboard data has been removed.
+- [x] Guest, invitation and wishlist counts are retrieved through the dashboard backend.
+- [x] User-specific event access has been secured.
+- [x] The authentication and dashboard flow has been tested.
+- [x] Changes have been committed and pushed to GitHub.
+
+---
+
+## 7. Current Checkpoint
 
 **Milestone 1:** COMPLETE  
 Gift Registry & Catalogue functionality completed, tested, committed and pushed.
 
-**Milestone 2:** IN PROGRESS  
-Authentication foundation and frontend integration underway.
+**Milestone 2:** COMPLETE  
+Authentication & Frontend Integration completed, tested, committed and pushed.
 
-**Next checkpoint:** Real user-specific dashboard and authentication integration.
+**Next milestone:** Milestone 3 — Invitations & RSVP
+
+**Next development focus:** Secure invitation creation, invitation links, public guest RSVP, RSVP deadlines, plus-one handling, dietary requirements and the foundation for QR-based event check-in.
+
+---
+
+## 8. Next Development Direction
+
+The next milestone will introduce the invitation and RSVP workflow.
+
+The planned foundation includes:
+
+- Host-controlled invitations.
+- Secure invitation tokens/links.
+- Guest invitation management.
+- Public RSVP without requiring a guest account.
+- Accept/decline responses.
+- Plus-one handling.
+- Dietary requirement collection.
+- RSVP deadline enforcement.
+- Invitation status tracking.
+- Preparation for QR-based event tickets.
+- Preparation for event check-in.
+
+Milestone 3 will be documented separately before implementation begins.

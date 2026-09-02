@@ -20,4 +20,15 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Guest> Guests => Set<Guest>();
 
     public DbSet<Product> Products => Set<Product>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Invitation>()
+            .HasOne(i => i.Guest)
+            .WithOne(g => g.Invitation)
+            .HasForeignKey<Guest>(g => g.InvitationId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }
