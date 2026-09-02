@@ -1,156 +1,582 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wimab Event Hub - Create & Manage Your Events</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Wimab Event Hub</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/landing.css">
+    <link rel="stylesheet" href="/css/auth.css">
+
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .bg-primary { background-color: #001f5b; }
-        .text-primary { color: #001f5b; }
-        .bg-accent { background-color: #c89a2c; }
-        .text-accent { color: #c89a2c; }
-        .border-accent { border-color: #c89a2c; }
-
-        .hero-bg {
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            transition: background-image 1s ease-in-out;
-        }
-
-        .hero-overlay {
-            background: linear-gradient(135deg, rgba(0, 31, 91, 0.72) 0%, rgba(0, 15, 45, 0.65) 100%);
-        }
-    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased">
 
-    <nav class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-xl sm:text-2xl font-bold text-primary">Wimab<span class="text-accent">Event Hub</span></span>
-            </div>
-            
-            <div class="hidden md:flex space-x-8 font-medium text-gray-600">
-                <a href="#features" class="hover:text-primary transition">Services</a>
-                <a href="#about" class="hover:text-primary transition">About</a>
-                <a href="#contact" class="hover:text-primary transition">Contact</a>
+<body>
+
+
+    <nav class="wimab-nav">
+        <div class="wimab-container wimab-nav-inner">
+
+            <a href="/landing.html" class="wimab-brand">
+                Wimab<span>Event Hub</span>
+            </a>
+
+            <div class="wimab-nav-links">
+                <a href="#features" class="wimab-nav-link">Services</a>
+                <a href="#how-it-works" class="wimab-nav-link">How It Works</a>
+                <a href="#developer" class="wimab-nav-link">About</a>
+                <a href="#contact" class="wimab-nav-link">Contact</a>
             </div>
 
-            <div class="flex items-center space-x-3">
-                <button onclick="openLoginModal()" class="bg-primary text-white px-5 sm:px-6 py-2 rounded-full font-semibold text-sm sm:text-base hover:bg-accent hover:text-primary transition shadow-md">
-                    Sign In
-                </button>
-            </div>
+            <button
+                type="button"
+                onclick="openLoginModal()"
+                class="wimab-nav-button">
+                Sign In
+            </button>
+
         </div>
     </nav>
 
-    <header class="hero-bg text-white py-24 sm:py-32 px-4 sm:px-6 text-center overflow-hidden" id="heroSlideshow">
-        <div class="hero-overlay absolute inset-0"></div>
-        <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10">
-            <div class="inline-flex items-center space-x-2 bg-accent/20 text-accent border border-accent/40 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide uppercase">
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
-                <span>Modern Event & Registry Platform</span>
+
+
+    <header class="wimab-hero">
+
+        <div class="wimab-hero-content">
+
+            <div class="wimab-eyebrow">
+                <i data-lucide="sparkles" width="15" height="15"></i>
+                Modern Event & Registry Platform
             </div>
-            <h1 class="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-                Plan, Invite, & Celebrate with <span class="text-accent">Elegance</span>
+
+            <h1>
+                Plan. Invite. Celebrate.
+                <span>All in One Place.</span>
             </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
-                The all-in-one platform for modern hosts. Create customized event pages, curate tailored gift registries, and track guests effortlessly from your phone or PC.
+
+            <p>
+                Create unforgettable events, manage guests, accept digital RSVPs,
+                and build beautiful gift registries — all in one modern platform.
             </p>
-            <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
-                <button onclick="openLoginModal()" class="w-full sm:w-auto bg-accent text-primary px-8 py-3.5 rounded-full font-bold text-base sm:text-lg shadow-xl hover:bg-white transition transform hover:-translate-y-0.5">
+
+            <div class="wimab-hero-actions">
+
+                <button
+                    type="button"
+                    onclick="openRegisterModal()"
+                    class="wimab-primary-button">
                     Get Started Free
                 </button>
+
+                <a
+                    href="#features"
+                    class="wimab-secondary-button">
+                    Explore Features
+                </a>
+
             </div>
+
         </div>
+
     </header>
 
-    <section id="features" class="py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-12 sm:mb-16">
-            <h2 class="text-2xl sm:text-3xl font-bold text-primary">Services We Offer</h2>
-            <p class="text-gray-500 mt-2 text-sm sm:text-base">Everything you need to bring your dream event to life.</p>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-            <!-- Service 1 -->
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition">
-                <div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="calendar" class="w-6 h-6"></i>
+
+    <section id="features" class="wimab-section">
+
+        <div class="wimab-container">
+
+            <div class="wimab-section-heading">
+
+                <div class="wimab-section-label">
+                    Powerful Features
                 </div>
-                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Custom Event Pages</h3>
-                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
-                    Build personalized invitation sites complete with your venue details, dress code, theme guidelines, and schedule.
+
+                <h2>
+                    Everything You Need to Host with Ease
+                </h2>
+
+                <p>
+                    Wimab Event Hub brings the essential tools for planning,
+                    managing and enjoying your event together in one place.
                 </p>
+
             </div>
 
-            <!-- Service 2 -->
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition">
-                <div class="w-12 h-12 bg-amber-50 text-accent rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="gift" class="w-6 h-6"></i>
-                </div>
-                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Smart Wishlists & Registries</h3>
-                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
-                    List the exact gifts or contributions you need. Guests can view and claim items seamlessly to avoid duplicates.
-                </p>
+
+            <div class="wimab-feature-grid">
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="calendar-days"></i>
+                    </div>
+                    <h3>Event Management</h3>
+                    <p>
+                        Create, customize and manage your events with ease.
+                    </p>
+                </article>
+
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h3>Guests & RSVPs</h3>
+                    <p>
+                        Keep track of your guests and manage responses
+                        throughout your event.
+                    </p>
+                </article>
+
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="gift"></i>
+                    </div>
+                    <h3>Gift Registries</h3>
+                    <p>
+                        Build a personalized gift registry so guests know
+                        exactly what you would love to receive.
+                    </p>
+                </article>
+
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="qr-code"></i>
+                    </div>
+                    <h3>QR Code Check-in</h3>
+                    <p>
+                        Make guest arrival simple with fast and convenient
+                        digital check-in.
+                    </p>
+                </article>
+
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="chart-column"></i>
+                    </div>
+                    <h3>Real-time Dashboard</h3>
+                    <p>
+                        Stay informed with useful insights about your event
+                        and guest activity.
+                    </p>
+                </article>
+
+
+                <article class="wimab-feature-card">
+                    <div class="wimab-feature-icon">
+                        <i data-lucide="mail"></i>
+                    </div>
+                    <h3>Digital Invitations</h3>
+                    <p>
+                        Send beautiful digital invitations and collect RSVPs
+                        without the paperwork.
+                    </p>
+                </article>
+
             </div>
 
-            <!-- Service 3 -->
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition sm:col-span-2 md:col-span-1">
-                <div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+
+    </section>
+
+
+
+    <section id="how-it-works" class="wimab-section wimab-section-light">
+
+        <div class="wimab-container">
+
+            <div class="wimab-section-heading">
+
+                <div class="wimab-section-label">
+                    How It Works
                 </div>
-                <h3 class="text-lg sm:text-xl font-semibold mb-3 text-primary">Multi-Channel Invitations</h3>
-                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
-                    Send invitations instantly via Email, SMS, or WhatsApp. Track live RSVPs and plus-ones right from your dashboard.
+
+                <h2>
+                    Three Simple Steps
+                </h2>
+
+                <p>
+                    From creating your event to welcoming your guests,
+                    Wimab keeps the process simple.
                 </p>
+
             </div>
+
+
+            <div class="wimab-steps">
+
+                <article class="wimab-step">
+
+                    <div class="wimab-step-icon">
+                        <i data-lucide="file-plus-2"></i>
+                    </div>
+
+                    <h3>1. Create Your Event</h3>
+
+                    <p>
+                        Add your event details, set the date and customize
+                        everything for your special occasion.
+                    </p>
+
+                </article>
+
+
+                <article class="wimab-step">
+
+                    <div class="wimab-step-icon">
+                        <i data-lucide="user-plus"></i>
+                    </div>
+
+                    <h3>2. Invite & Manage Guests</h3>
+
+                    <p>
+                        Send invitations, collect RSVPs and keep track
+                        of your guest list.
+                    </p>
+
+                </article>
+
+
+                <article class="wimab-step">
+
+                    <div class="wimab-step-icon">
+                        <i data-lucide="party-popper"></i>
+                    </div>
+
+                    <h3>3. Celebrate with Ease</h3>
+
+                    <p>
+                        Enjoy your event while Wimab helps you stay
+                        organized from beginning to end.
+                    </p>
+
+                </article>
+
+            </div>
+
         </div>
+
     </section>
 
-    <section id="about" class="py-16 bg-white border-t border-gray-100 px-4 sm:px-6">
-        <div class="max-w-4xl mx-auto text-center space-y-4">
-            <h2 class="text-2xl sm:text-3xl font-bold text-primary">About Wimab Event Hub</h2>
-            <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
-                Designed to make organizing gatherings, parties, and special occasions completely frictionless. Whether you are hosting an intimate family braai or a grand celebration, Wimab Event Hub gives you professional-grade tools right from your browser.
-            </p>
+
+
+    <section id="developer" class="wimab-section wimab-developer">
+
+        <div class="wimab-container wimab-developer-grid">
+
+            <img
+                src="/images/developer/wisani.jpg"
+                alt="Wisani Mabunda"
+                class="wimab-developer-photo">
+
+
+            <div class="wimab-developer-copy">
+
+                <div class="wimab-section-label">
+                    The Story Behind Wimab Event Hub
+                </div>
+
+                <h2>
+                    Built with Purpose. Designed for Moments.
+                </h2>
+
+                <p>
+                    Hi, I'm Wisani Mabunda, the developer behind
+                    Wimab Event Hub.
+                </p>
+
+                <p>
+                    I built this platform to bring important parts of
+                    event planning together, from managing events and
+                    guests to invitations and gift registries.
+                </p>
+
+                <p>
+                    The goal is simple: help hosts create seamless,
+                    memorable experiences using modern technology.
+                </p>
+
+                <div class="wimab-developer-name">
+                    Wisani Mabunda
+                </div>
+
+                <div class="wimab-developer-role">
+                    Developer & Creator
+                </div>
+
+            </div>
+
+
+            <div class="wimab-why">
+
+                <h3>Why Wimab?</h3>
+
+                <div class="wimab-why-item">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Simple and modern experience</span>
+                </div>
+
+                <div class="wimab-why-item">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Secure and reliable platform</span>
+                </div>
+
+                <div class="wimab-why-item">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Built with purpose and care</span>
+                </div>
+
+                <div class="wimab-why-item">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Designed around real event needs</span>
+                </div>
+
+            </div>
+
         </div>
+
     </section>
 
-    <section id="contact" class="py-16 px-4 sm:px-6 max-w-4xl mx-auto text-center">
-        <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">Get In Touch</h2>
-        <p class="text-gray-600 text-sm sm:text-base mb-6">Have questions or need assistance with your event setup? Reach out to our team.</p>
-        <a href="mailto:support@wimabevents.com" class="inline-flex items-center space-x-2 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-accent hover:text-primary transition shadow-md">
-            <i data-lucide="mail" class="w-5 h-5"></i>
-            <span>support@wimabevents.com</span>
-        </a>
+
+
+    <section id="contact" class="wimab-contact">
+
+        <div class="wimab-container">
+
+            <div class="wimab-contact-grid">
+
+                <div class="wimab-contact-item">
+
+                    <div class="wimab-contact-icon">
+                        <i data-lucide="mail"></i>
+                    </div>
+
+                    <div>
+                        <strong>Email</strong>
+                        <a href="mailto:wisanimabunda071@gmail.com">
+                            wisanimabunda071@gmail.com
+                        </a>
+                    </div>
+
+                </div>
+
+
+                <div class="wimab-contact-item">
+
+                    <div class="wimab-contact-icon">
+                        <i data-lucide="calendar-days"></i>
+                    </div>
+
+                    <div>
+                        <strong>Wimab Event Hub</strong>
+                        <span>Your all-in-one event planning platform</span>
+                    </div>
+
+                </div>
+
+
+                <div class="wimab-contact-item">
+
+                    <div class="wimab-contact-icon">
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+
+                    <div>
+                        <strong>Get Started</strong>
+                        <span>Create your event and start planning</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </section>
 
-    <footer class="bg-primary text-gray-400 py-10 sm:py-12 px-6 text-center text-xs sm:text-sm">
-        <p>&copy; 2026 Wimab Event Hub. Developed by Wisani Mabunda. All rights reserved.</p>
+
+
+    <footer class="wimab-footer">
+
+        <div class="wimab-container wimab-footer-inner">
+
+            <div>
+                <strong>WimabEvent Hub</strong>
+            </div>
+
+            <div>
+                © 2026 Wimab Event Hub. All rights reserved.
+            </div>
+
+        </div>
+
     </footer>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-center transform transition-all">
-            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">&times;</button>
-            <h3 class="text-xl sm:text-2xl font-bold text-primary mb-2">Welcome to Wimab Hub</h3>
-            <p class="text-gray-500 mb-6 text-xs sm:text-sm">Sign in securely to access your event dashboard</p>
-            
-            <div class="space-y-3 sm:space-y-4">
-                <button onclick="simulateLogin()" class="w-full flex items-center justify-center space-x-3 border border-gray-300 py-3.5 rounded-xl hover:bg-gray-50 transition font-medium text-gray-700 text-sm sm:text-base shadow-sm">
-                    <i data-lucide="globe" class="w-5 h-5 text-blue-600"></i>
-                    <span>Continue with Google</span>
+
+<!-- Authentication Modals -->
+
+    <div id="loginModal" class="wimab-auth-modal hidden">
+        <div class="wimab-auth-card">
+
+            <button
+                type="button"
+                onclick="closeLoginModal()"
+                class="wimab-auth-close">
+                &times;
+            </button>
+
+            <div class="wimab-auth-header">
+                <h3 class="wimab-auth-title">Welcome to Wimab Hub</h3>
+                <p class="wimab-auth-subtitle">Sign in to manage your events</p>
+            </div>
+
+            <form id="loginForm" onsubmit="loginUser(event)" class="wimab-auth-form">
+
+                <div class="wimab-auth-field">
+                    <label for="loginEmail" class="wimab-auth-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        id="loginEmail"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="wimab-auth-input"
+                        placeholder="you@example.com">
+                </div>
+
+                <div class="wimab-auth-field">
+                    <label for="loginPassword" class="wimab-auth-label">
+                        Password
+                    </label>
+
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        class="wimab-auth-input"
+                        placeholder="Enter your password">
+                </div>
+
+                <div id="loginError" class="wimab-auth-error"></div>
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="wimab-auth-button">
+                    Sign In
                 </button>
-                <button onclick="simulateLogin()" class="w-full flex items-center justify-center space-x-3 bg-black text-white py-3.5 rounded-xl hover:bg-gray-800 transition font-medium text-sm sm:text-base shadow-sm">
-                    <i data-lucide="apple" class="w-5 h-5"></i>
-                    <span>Continue with Apple</span>
+
+            </form>
+
+            <div class="wimab-auth-switch">
+                Don't have an account?
+                <button
+                    type="button"
+                    onclick="openRegisterModal()"
+                    class="wimab-auth-link">
+                    Create one
                 </button>
             </div>
+
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="wimab-auth-modal hidden">
+        <div class="wimab-auth-card">
+
+            <button
+                type="button"
+                onclick="closeRegisterModal()"
+                class="wimab-auth-close">
+                &times;
+            </button>
+
+            <div class="wimab-auth-header">
+                <h3 class="wimab-auth-title">Create Your Wimab Account</h3>
+                <p class="wimab-auth-subtitle">Create an account to host your events</p>
+            </div>
+
+            <form id="registerForm" onsubmit="registerUser(event)" class="wimab-auth-form">
+
+                <div class="wimab-auth-field">
+                    <label for="registerName" class="wimab-auth-label">
+                        Full Name
+                    </label>
+
+                    <input
+                        id="registerName"
+                        type="text"
+                        required
+                        autocomplete="name"
+                        class="wimab-auth-input"
+                        placeholder="Your full name">
+                </div>
+
+                <div class="wimab-auth-field">
+                    <label for="registerEmail" class="wimab-auth-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        id="registerEmail"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="wimab-auth-input"
+                        placeholder="you@example.com">
+                </div>
+
+                <div class="wimab-auth-field">
+                    <label for="registerPassword" class="wimab-auth-label">
+                        Password
+                    </label>
+
+                    <input
+                        id="registerPassword"
+                        type="password"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                        class="wimab-auth-input"
+                        placeholder="At least 8 characters">
+                </div>
+
+                <div id="registerError" class="wimab-auth-error"></div>
+
+                <button
+                    type="submit"
+                    id="registerButton"
+                    class="wimab-auth-button">
+                    Create Account
+                </button>
+
+            </form>
+
+            <div class="wimab-auth-switch">
+                Already have an account?
+                <button
+                    type="button"
+                    onclick="switchToLogin()"
+                    class="wimab-auth-link">
+                    Sign in
+                </button>
+            </div>
+
         </div>
     </div>
 
@@ -175,6 +601,7 @@
         setInterval(changeHeroBackground, 6000);
 
         function openLoginModal() {
+            document.getElementById('registerModal').classList.add('hidden');
             document.getElementById('loginModal').classList.remove('hidden');
         }
 
@@ -182,11 +609,121 @@
             document.getElementById('loginModal').classList.add('hidden');
         }
 
-        function simulateLogin() {
-            localStorage.setItem('wimab_userid', 'user_' + Math.random().toString(36).substring(2, 9));
-            alert("Signed in successfully!");
-            window.location.href = "./dashboard.html"; 
+        function openRegisterModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('registerModal').classList.remove('hidden');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+        }
+
+        function switchToLogin() {
+            closeRegisterModal();
+            openLoginModal();
+        }
+
+        function showAuthError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function clearAuthError(elementId) {
+            const element = document.getElementById(elementId);
+            element.textContent = '';
+            element.classList.remove('show');
+        }
+
+        async function loginUser(event) {
+            event.preventDefault();
+
+            clearAuthError('loginError');
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const button = document.getElementById('loginButton');
+
+            button.disabled = true;
+            button.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Invalid email or password.');
+                }
+
+                localStorage.setItem('wimab_userid', data.userId);
+                localStorage.setItem('wimab_fullname', data.fullName || '');
+                localStorage.setItem('wimab_email', data.email || email);
+
+                window.location.href = './dashboard.html';
+            }
+            catch (error) {
+                showAuthError('loginError', error.message);
+            }
+            finally {
+                button.disabled = false;
+                button.textContent = 'Sign In';
+            }
+        }
+
+        async function registerUser(event) {
+            event.preventDefault();
+
+            clearAuthError('registerError');
+
+            const fullName = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const button = document.getElementById('registerButton');
+
+            button.disabled = true;
+            button.textContent = 'Creating account...';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ fullName, email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Unable to create account.');
+                }
+
+                alert('Account created successfully! Please sign in.');
+                document.getElementById('registerForm').reset();
+                switchToLogin();
+                document.getElementById('loginEmail').value = email;
+            }
+            catch (error) {
+                showAuthError('registerError', error.message);
+            }
+            finally {
+                button.disabled = false;
+                button.textContent = 'Create Account';
+            }
         }
     </script>
 </body>
 </html>
+
+
+
+

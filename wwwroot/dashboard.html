@@ -1743,151 +1743,11 @@
                     </div>
 
 
-                    <div id="eventsList">
-
-
-                        
-
-                        <div class="event">
-
-
-                            <div class="event-left">
-
-
-                                <div class="event-date">
-
-                                    <div class="event-day">
-                                        24
-                                    </div>
-
-                                    <div class="event-month">
-                                        Aug
-                                    </div>
-
-                                </div>
-
-
-                                <div class="event-info">
-
-                                    <div class="event-name">
-                                        Birthday Celebration
-                                    </div>
-
-                                    <div class="event-details">
-                                        24 guests • Johannesburg
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                            <span class="status upcoming">
-                                Upcoming
-                            </span>
-
-
-                        </div>
-
-
-                        
-
-                        <div class="event">
-
-
-                            <div class="event-left">
-
-
-                                <div class="event-date">
-
-                                    <div class="event-day">
-                                        12
-                                    </div>
-
-                                    <div class="event-month">
-                                        Sep
-                                    </div>
-
-                                </div>
-
-
-                                <div class="event-info">
-
-                                    <div class="event-name">
-                                        Graduation Celebration
-                                    </div>
-
-                                    <div class="event-details">
-                                        45 guests • East London
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                            <span class="status active">
-                                Active
-                            </span>
-
-
-                        </div>
-
-
-                        
-
-                        <div class="event">
-
-
-                            <div class="event-left">
-
-
-                                <div class="event-date">
-
-                                    <div class="event-day">
-                                        03
-                                    </div>
-
-                                    <div class="event-month">
-                                        Oct
-                                    </div>
-
-                                </div>
-
-
-                                <div class="event-info">
-
-                                    <div class="event-name">
-                                        Family Gathering
-                                    </div>
-
-                                    <div class="event-details">
-                                        18 guests • Mthatha
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                            <span class="status upcoming">
-                                Upcoming
-                            </span>
-
-
-                        </div>
-
-
-                    </div>
+                    <div id="eventsList"></div>
 
 
                 </div>
 
-
-              
 
                 <div class="card">
 
@@ -2008,98 +1868,7 @@
 
                 </div>
 
-
-                
-
-                <div class="invitation">
-
-
-                    <div class="invitation-avatar">
-                        JM
-                    </div>
-
-
-                    <div class="invitation-info">
-
-                        <div class="invitation-name">
-                            John Mokoena
-                        </div>
-
-                        <div class="invitation-event">
-                            Birthday Celebration
-                        </div>
-
-                    </div>
-
-
-                    <span class="status active">
-                        Accepted
-                    </span>
-
-
-                </div>
-
-
-                
-
-                <div class="invitation">
-
-
-                    <div class="invitation-avatar">
-                        AN
-                    </div>
-
-
-                    <div class="invitation-info">
-
-                        <div class="invitation-name">
-                            Amanda Ndlovu
-                        </div>
-
-                        <div class="invitation-event">
-                            Graduation Celebration
-                        </div>
-
-                    </div>
-
-
-                    <span class="status upcoming">
-                        Pending
-                    </span>
-
-
-                </div>
-
-
-                
-
-                <div class="invitation">
-
-
-                    <div class="invitation-avatar">
-                        TM
-                    </div>
-
-
-                    <div class="invitation-info">
-
-                        <div class="invitation-name">
-                            Thabo Mokoena
-                        </div>
-
-                        <div class="invitation-event">
-                            Family Gathering
-                        </div>
-
-                    </div>
-
-
-                    <span class="status active">
-                        Accepted
-                    </span>
-
-
-                </div>
+                <div id="invitationsList"></div>
 
 
             </div>
@@ -2114,56 +1883,211 @@
 </div>
 
 
-
-
 <script>
 
+    async function loadUser() {
 
+        try {
 
-    function loadUser() {
+            const response = await fetch("/api/auth/me", {
+                credentials: "include"
+            });
 
+            if (!response.ok) {
 
-        const fullName =
-            localStorage.getItem("wimabFullName");
+                window.location.href = "./landing.html";
+                return;
 
+            }
 
-        if (!fullName) {
+            const user = await response.json();
 
-            return;
+            const profileName =
+                document.getElementById("profileName");
+
+            const welcomeMessage =
+                document.getElementById("welcomeMessage");
+
+            const profileAvatar =
+                document.getElementById("profileAvatar");
+
+            profileName.textContent =
+                user.fullName;
+
+            welcomeMessage.textContent =
+                `Welcome back, ${user.fullName}`;
+
+            profileAvatar.textContent =
+                user.fullName
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase();
+
+        } catch (error) {
+
+            console.error("Unable to load authenticated user:", error);
+
+            window.location.href = "./landing.html";
 
         }
-
-
-        const profileName =
-            document.getElementById("profileName");
-
-
-        const welcomeMessage =
-            document.getElementById("welcomeMessage");
-
-
-        const profileAvatar =
-            document.getElementById("profileAvatar");
-
-
-        profileName.textContent =
-            fullName;
-
-
-        welcomeMessage.textContent =
-            `Welcome back, ${fullName}`;
-
-
-        profileAvatar.textContent =
-            fullName
-                .trim()
-                .charAt(0)
-                .toUpperCase();
 
     }
 
 
-   
+
+    function renderRecentEvents(events) {
+        const eventsList = document.getElementById("eventsList");
+
+        if (!events || events.length === 0) {
+            eventsList.innerHTML = `
+                <div class="empty-state">
+                    No events created yet.
+                </div>
+            `;
+            return;
+        }
+
+        eventsList.innerHTML = events.map(event => {
+            const eventDate = new Date(event.eventDate);
+
+            const day = eventDate
+                .getDate()
+                .toString()
+                .padStart(2, "0");
+
+            const month = eventDate
+                .toLocaleString("en-US", { month: "short" });
+
+            return `
+                <div class="event">
+                    <div class="event-left">
+                        <div class="event-date">
+                            <div class="event-day">
+                                ${day}
+                            </div>
+
+                            <div class="event-month">
+                                ${month}
+                            </div>
+                        </div>
+
+                        <div class="event-info">
+                            <div class="event-name">
+                                ${event.title}
+                            </div>
+
+                            <div class="event-details">
+                                ${event.category} � ${event.venueLocation || "Venue not specified"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="status upcoming">
+                        Upcoming
+                    </span>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function renderRecentInvitations(invitations) {
+        const invitationsList =
+            document.getElementById("invitationsList");
+
+        if (!invitations || invitations.length === 0) {
+            invitationsList.innerHTML = `
+                <div class="empty-state">
+                    No invitations yet.
+                </div>
+            `;
+            return;
+        }
+
+        invitationsList.innerHTML = invitations.map(invitation => {
+            const initials = invitation.guestName
+                .trim()
+                .split(/\s+/)
+                .map(name => name.charAt(0))
+                .join("")
+                .substring(0, 2)
+                .toUpperCase();
+
+            const statusClass =
+                invitation.isAccepted ? "active" : "upcoming";
+
+            const statusText =
+                invitation.isAccepted ? "Accepted" : "Pending";
+
+            return `
+                <div class="invitation">
+                    <div class="invitation-avatar">
+                        ${initials}
+                    </div>
+
+                    <div class="invitation-info">
+                        <div class="invitation-name">
+                            ${invitation.guestName}
+                        </div>
+
+                        <div class="invitation-event">
+                            ${invitation.eventTitle}
+                        </div>
+                    </div>
+
+                    <span class="status ${statusClass}">
+                        ${statusText}
+                    </span>
+                </div>
+            `;
+        }).join("");
+    }
+
+    async function loadDashboard() {
+
+        try {
+
+            const response = await fetch("/api/dashboard", {
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+
+                if (response.status === 401) {
+                    window.location.href = "./landing.html";
+                    return;
+                }
+
+                throw new Error("Unable to load dashboard data.");
+
+            }
+
+            const dashboard = await response.json();
+
+
+            document.getElementById("eventCount").textContent =
+                dashboard.totalEvents;
+
+            document.getElementById("guestCount").textContent =
+                dashboard.totalGuests;
+
+            document.getElementById("invitationCount").textContent =
+                dashboard.totalInvitations;
+
+            document.getElementById("wishlistCount").textContent =
+                dashboard.totalWishlistItems;
+
+            renderRecentEvents(dashboard.recentEvents);
+
+            renderRecentInvitations(dashboard.recentInvitations);
+
+        } catch (error) {
+
+            console.error("Unable to load dashboard:", error);
+
+        }
+
+    }
+
 
     function goTo(page) {
 
@@ -2209,38 +2133,39 @@
 
     }
 
+    async function logout() {
 
-   
+        try {
 
-    function logout() {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
 
+            if (!response.ok) {
+                console.error("Logout failed.");
+                return;
+            }
 
-        localStorage.removeItem("wimabUserId");
+            window.location.href = "./landing.html";
 
-        localStorage.removeItem("wimabFullName");
+        } catch (error) {
 
-        localStorage.removeItem("wimabEmail");
+            console.error("Unable to log out:", error);
 
-
-        window.location.href =
-            "./landing.html";
+        }
 
     }
 
 
-    
 
     document.addEventListener(
         "DOMContentLoaded",
         function () {
-
-
             loadUser();
 
-
-        
-
-            lucide.createIcons();
+            loadDashboard();
+lucide.createIcons();
 
 
         }
@@ -2253,3 +2178,16 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+

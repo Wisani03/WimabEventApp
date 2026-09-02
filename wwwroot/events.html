@@ -9,17 +9,18 @@
 
     <style>
         :root{
-            --navy:#0b1f3a;
-            --navy-light:#132d50;
-            --gold:#c9a227;
-            --gold-light:#e5c65a;
-            --white:#ffffff;
-            --text:#1f2937;
-            --muted:#6b7280;
-            --border:#e5e7eb;
-            --bg:#f6f8fb;
-            --shadow:0 10px 30px rgba(11,31,58,0.08);
-            --radius:18px;
+            --navy:#0F172A;
+            --navy-light:#1E293B;
+            --gold:#F59E0B;
+            --gold-dark:#D97706;
+            --gold-light:#FEF3C7;
+            --white:#FFFFFF;
+            --background:#F8FAFC;
+            --text:#0F172A;
+            --muted:#64748B;
+            --border:#E2E8F0;
+            --shadow:0 10px 25px rgba(15,23,42,0.07);
+            --radius:13px;
         }
 
         *{
@@ -30,7 +31,7 @@
 
         body{
             font-family:Arial, Helvetica, sans-serif;
-            background:var(--bg);
+            background:var(--background);
             color:var(--text);
         }
 
@@ -71,15 +72,36 @@
             border-radius:10px;
             font-weight:600;
         }
-
         .btn-primary{
             background:var(--gold);
             color:var(--navy);
+            transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
+        .btn-primary:hover{
+            background:var(--gold-light);
+            transform:translateY(-2px);
+            box-shadow:0 8px 18px rgba(201,162,39,0.25);
+        }
+
+        .btn-primary:active{
+            transform:translateY(0);
+            box-shadow:none;
+        }
         .btn-secondary{
             border:1px solid rgba(255,255,255,0.2);
             color:white;
+            transition:transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .btn-secondary:hover{
+            background:rgba(255,255,255,0.08);
+            border-color:rgba(255,255,255,0.4);
+            transform:translateY(-2px);
+        }
+
+        .btn-secondary:active{
+            transform:translateY(0);
         }
 
         .container{
@@ -114,11 +136,13 @@
             border:1px solid var(--border);
             overflow:hidden;
             box-shadow:var(--shadow);
-            transition:0.25s;
+            transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .event-card:hover{
-            transform:translateY(-5px);
+            transform:translateY(-6px);
+            box-shadow:0 18px 35px rgba(11,31,58,0.14);
+            border-color:rgba(201,162,39,0.35);
         }
 
         .event-top{
@@ -129,23 +153,28 @@
 
         .category{
             display:inline-block;
-            background:rgba(201,162,39,0.15);
+            background:rgba(201,162,39,0.14);
             color:var(--gold-light);
-            padding:6px 12px;
+            padding:7px 13px;
             border-radius:30px;
             font-size:12px;
-            margin-bottom:12px;
+            font-weight:700;
+            letter-spacing:0.3px;
+            margin-bottom:14px;
         }
 
         .event-title{
-            font-size:24px;
+            font-size:25px;
+            font-weight:700;
+            line-height:1.25;
             margin-bottom:10px;
         }
 
         .event-description{
             color:#d7e1ed;
-            line-height:1.6;
+            line-height:1.65;
             font-size:14px;
+            max-width:95%;
         }
 
         .event-body{
@@ -171,7 +200,6 @@
             gap:10px;
             margin-top:20px;
         }
-
         .view-btn{
             flex:1;
             background:var(--navy);
@@ -181,8 +209,19 @@
             border-radius:10px;
             text-align:center;
             font-weight:600;
+            transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
 
+        .view-btn:hover{
+            background:var(--navy-light);
+            transform:translateY(-2px);
+            box-shadow:0 8px 18px rgba(11,31,58,0.18);
+        }
+
+        .view-btn:active{
+            transform:translateY(0);
+            box-shadow:none;
+        }
         .delete-btn{
             background:#fef2f2;
             color:#b91c1c;
@@ -190,6 +229,25 @@
             padding:12px 15px;
             border-radius:10px;
             cursor:pointer;
+            transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .delete-btn:hover{
+            background:#fee2e2;
+            transform:translateY(-2px);
+            box-shadow:0 8px 18px rgba(185,28,28,0.12);
+        }
+
+        .delete-btn:active{
+            transform:translateY(0);
+            box-shadow:none;
+        }
+
+        .btn:focus-visible,
+        .view-btn:focus-visible,
+        .delete-btn:focus-visible{
+            outline:3px solid rgba(201,162,39,0.35);
+            outline-offset:3px;
         }
 
         .empty{
@@ -413,3 +471,11 @@ lucide.createIcons();
 
 </body>
 </html>
+
+
+
+
+
+
+
+

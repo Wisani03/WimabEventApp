@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WimabEventApp.Data;
@@ -5,6 +7,7 @@ using WimabEventApp.Models;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class EventsController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -17,7 +20,18 @@ public class EventsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEvents()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new
+            {
+                message = "You are not logged in."
+            });
+        }
+
         var events = await _context.Events
+            .Where(e => e.UserId == userId)
             .Include(e => e.WishlistItems)
             .Include(e => e.Invitations)
             .ToListAsync();
@@ -28,10 +42,21 @@ public class EventsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEvent(int id)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new
+            {
+                message = "You are not logged in."
+            });
+        }
+
         var eventItem = await _context.Events
+            .Where(e => e.Id == id && e.UserId == userId)
             .Include(e => e.WishlistItems)
             .Include(e => e.Invitations)
-            .FirstOrDefaultAsync(e => e.Id == id);
+            .FirstOrDefaultAsync();
 
         if (eventItem == null)
         {
@@ -47,6 +72,16 @@ public class EventsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateEvent([FromBody] Event newEvent)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new
+            {
+                message = "You are not logged in."
+            });
+        }
+
         if (string.IsNullOrWhiteSpace(newEvent.Title))
         {
             return BadRequest(new
@@ -55,13 +90,7 @@ public class EventsController : ControllerBase
             });
         }
 
-        if (string.IsNullOrWhiteSpace(newEvent.UserId))
-        {
-            return BadRequest(new
-            {
-                message = "User ID is required."
-            });
-        }
+        newEvent.UserId = userId;
 
         _context.Events.Add(newEvent);
 
@@ -77,7 +106,18 @@ public class EventsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEvent(int id)
     {
-        var eventItem = await _context.Events.FindAsync(id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized(new
+            {
+                message = "You are not logged in."
+            });
+        }
+
+        var eventItem = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
         if (eventItem == null)
         {

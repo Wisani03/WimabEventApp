@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WimabEventApp.Models;
@@ -20,7 +19,6 @@ namespace WimabEventApp.Controllers
             _signInManager = signInManager;
         }
 
-        // POST: api/auth/register
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -48,7 +46,6 @@ namespace WimabEventApp.Controllers
                 });
             }
 
-            // Check whether an account already exists
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
@@ -59,7 +56,6 @@ namespace WimabEventApp.Controllers
                 });
             }
 
-            // Create the new Wimab user
             var user = new ApplicationUser
             {
                 UserName = request.Email,
@@ -67,13 +63,11 @@ namespace WimabEventApp.Controllers
                 FullName = request.FullName
             };
 
-            // ASP.NET Identity securely hashes the password
             var result = await _userManager.CreateAsync(
                 user,
                 request.Password
             );
 
-            // Check whether account creation succeeded
             if (!result.Succeeded)
             {
                 var errors = result.Errors
@@ -96,11 +90,9 @@ namespace WimabEventApp.Controllers
             });
         }
 
-        // POST: api/auth/login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            // Validate email
             if (string.IsNullOrWhiteSpace(request.Email))
             {
                 return BadRequest(new
@@ -109,7 +101,6 @@ namespace WimabEventApp.Controllers
                 });
             }
 
-            // Validate password
             if (string.IsNullOrWhiteSpace(request.Password))
             {
                 return BadRequest(new
@@ -118,7 +109,6 @@ namespace WimabEventApp.Controllers
                 });
             }
 
-            // Find the user
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -129,18 +119,20 @@ namespace WimabEventApp.Controllers
                 });
             }
 
-            // Check the password
-            var result = await _signInManager.CheckPasswordSignInAsync(
+            var result = await _signInManager.PasswordSignInAsync(
                 user,
                 request.Password,
-                lockoutOnFailure: false
+                isPersistent: true,
+                lockoutOnFailure: true
             );
 
             if (!result.Succeeded)
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid email or password."
+                    message = result.IsLockedOut
+                        ? "Your account is temporarily locked. Please try again later."
+                        : "Invalid email or password."
                 });
             }
 
@@ -153,7 +145,35 @@ namespace WimabEventApp.Controllers
             });
         }
 
-        // POST: api/auth/logout
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return Unauthorized(new
+                {
+                    message = "You are not logged in."
+                });
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new
+                {
+                    message = "Authenticated user could not be found."
+                });
+            }
+
+            return Ok(new
+            {
+                userId = user.Id,
+                fullName = user.FullName,
+                email = user.Email
+            });
+        }
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {

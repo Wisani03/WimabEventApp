@@ -1,0 +1,174 @@
+﻿
+
+.wimab-auth-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+}
+
+.wimab-auth-modal.hidden {
+    display: none;
+}
+
+.wimab-auth-card {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+}
+
+.wimab-auth-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.wimab-auth-close:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.wimab-auth-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.wimab-auth-title {
+    margin: 0 0 0.5rem;
+    color: #001f5b;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.wimab-auth-subtitle {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.wimab-auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.wimab-auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.wimab-auth-label {
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wimab-auth-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wimab-auth-input:focus {
+    border-color: #001f5b;
+    box-shadow: 0 0 0 3px rgba(0, 31, 91, 0.12);
+}
+
+.wimab-auth-button {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: none;
+    border-radius: 12px;
+    background: #001f5b;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.wimab-auth-button:hover {
+    background: #f4c542;
+    color: #001f5b;
+    transform: translateY(-1px);
+}
+
+.wimab-auth-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.wimab-auth-error {
+    display: none;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.875rem;
+}
+
+.wimab-auth-error.show {
+    display: block;
+}
+
+.wimab-auth-switch {
+    margin-top: 1.25rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.wimab-auth-link {
+    border: none;
+    padding: 0;
+    background: none;
+    color: #001f5b;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.wimab-auth-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+
+    .wimab-auth-card {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .wimab-auth-title {
+        font-size: 1.3rem;
+    }
+
+}

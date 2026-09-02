@@ -1269,20 +1269,34 @@
 
     lucide.createIcons();
 
+    async function checkAuthentication() {
 
-    
+        try {
 
-    const userId = localStorage.getItem("wimab_userid");
+            const response = await fetch("/api/auth/me", {
+                credentials: "include"
+            });
 
+            if (!response.ok) {
 
-    if (!userId) {
+                window.location.href = "./landing.html";
+                return false;
 
-        window.location.href = "./landing.html";
+            }
+
+            return true;
+
+        } catch (error) {
+
+            console.error("Unable to verify authentication:", error);
+
+            window.location.href = "./landing.html";
+            return false;
+
+        }
 
     }
 
-
-  
 
     const form =
         document.getElementById("createEventForm");
@@ -1293,8 +1307,6 @@
     const alertBox =
         document.getElementById("alertBox");
 
-
-  
 
     function showAlert(message, type) {
 
@@ -1307,14 +1319,11 @@
     }
 
 
-
     form.addEventListener("submit", async function (event) {
 
         event.preventDefault();
 
-
         createButton.disabled = true;
-
 
         createButton.innerHTML = `
 
@@ -1328,8 +1337,6 @@
 
 
         const newEvent = {
-
-            userId: userId,
 
             title:
                 document.getElementById("eventTitle").value.trim(),
@@ -1358,6 +1365,14 @@
 
         try {
 
+            const authenticated =
+                await checkAuthentication();
+
+            if (!authenticated) {
+                return;
+            }
+
+
             const response = await fetch(
                 "/api/events",
                 {
@@ -1366,6 +1381,8 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
+
+                    credentials: "include",
 
                     body: JSON.stringify(newEvent)
                 }
@@ -1378,64 +1395,30 @@
             if (!response.ok) {
 
                 throw new Error(
-                    result.message ||
-                    result ||
-                    "Failed to create event."
+                    result.message || "Unable to create event."
                 );
 
             }
 
 
-          
-
-            const createdEventId =
-                result.eventId;
-
-
-            localStorage.setItem(
-                "wimab_selected_event_id",
-                createdEventId
-            );
-
-
-            
-
             showAlert(
-                "Event created successfully!",
+                result.message || "Event created successfully!",
                 "success"
             );
 
 
             form.reset();
 
-
-
-            setTimeout(function () {
-
-                window.location.href =
-                    "./events.html";
-
-            }, 900);
-
-
-        }
-        catch (error) {
-
-            console.error(
-                "Error creating event:",
-                error
-            );
-
+        } catch (error) {
 
             showAlert(
-                error.message ||
-                "Something went wrong while creating the event.",
+                error.message || "Something went wrong.",
                 "error"
             );
 
+        } finally {
 
             createButton.disabled = false;
-
 
             createButton.innerHTML = `
 
@@ -1450,6 +1433,11 @@
         }
 
     });
+
+
+    checkAuthentication();
+
+
 
 </script>
 
