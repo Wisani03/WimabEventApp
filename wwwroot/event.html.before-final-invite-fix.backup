@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -972,7 +972,7 @@
 
                     <div class="meta-content">
                         <span>Date</span>
-                        <strong id="eventDate">â€”</strong>
+                        <strong id="eventDate">—</strong>
                     </div>
 
                 </div>
@@ -985,7 +985,7 @@
 
                     <div class="meta-content">
                         <span>Venue</span>
-                        <strong id="eventVenue">â€”</strong>
+                        <strong id="eventVenue">—</strong>
                     </div>
 
                 </div>
@@ -998,7 +998,7 @@
 
                     <div class="meta-content">
                         <span>Theme</span>
-                        <strong id="eventTheme">â€”</strong>
+                        <strong id="eventTheme">—</strong>
                     </div>
 
                 </div>
@@ -1011,7 +1011,7 @@
 
                     <div class="meta-content">
                         <span>Attire</span>
-                        <strong id="eventAttire">â€”</strong>
+                        <strong id="eventAttire">—</strong>
                     </div>
 
                 </div>
@@ -1868,7 +1868,7 @@ async function loadEvent() {
                             class="copy-invite"
                             onclick="copyInvitationLink('${inviteGuid}')">
 
-                            ðŸ“‹ Copy Link
+                            📋 Copy Link
 
                         </button>
 
@@ -1966,7 +1966,6 @@ async function loadEvent() {
 
 </body>
 </html>
-
 
 
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -167,7 +167,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         // Extracts eventId from query string (?id=1) or defaults to 1
         const eventId = urlParams.get('id') || 1;
-        const inviteGuid = urlParams.get('invite') || urlParams.get('inviteGuid');
+        const inviteGuid = urlParams.get('inviteGuid');
 
         // =========================================================
 // LOAD INVITATION
@@ -482,7 +482,7 @@ async function submitRsvp(e) {
     const guestSurnameVal =
         document.getElementById('pubSurname').value.trim();
 
-    const inviteGuid = urlParams.get('invite') || urlParams.get('inviteGuid');
+    const inviteGuid = urlParams.get('inviteGuid');
 
     if (!inviteGuid) {
         alert('This invitation link is invalid or incomplete.');

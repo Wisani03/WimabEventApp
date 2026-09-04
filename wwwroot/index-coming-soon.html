@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wimab Event Hub - Under Construction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #001f5b; 
+            --accent-color: #c89a2c;  
+            --text-light: #f4f7f6;
+            --text-dark: #333;
+            --bg-body: #f0f2f5;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0 2c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8zm0 2c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8zm20 4c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0-20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm20 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0-20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-16 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM8 32c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-20 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM20 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm4 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm12-12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm4 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-32 4c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-12 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm8-8c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM8 48c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm20-16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0 20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm20 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0-20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0 20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM48 8c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-20 4c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm20 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0-20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM32 16c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm4 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM48 32c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm0 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-4 4c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm8 8c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z' fill='%23001f5b' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+            z-index: -1;
+        }
+
+        .container {
+            background: white;
+            padding: 4rem;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,31,91,0.15);
+            max-width: 600px;
+            border-top: 8px solid var(--accent-color);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--primary-color);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .developer-name {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .social-links {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .social-links p {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .linkedin-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .linkedin-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 2rem; margin: 20px; }
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wimab Event Hub</h1>
+        <div class="subtitle">Coming Soon!</div>
+        
+        <p>
+            Our platform is currently under construction. Developer <span class="developer-name">Wisani Mabunda</span> is working hard to bring you a seamless event invitation and management experience.
+        </p>
+        <p>
+            We sincerely apologize for the inconvenience and thank you very much for your patience. Great things are on the way!
+        </p>
+
+        <div class="social-links">
+            <p>Follow the developer’s professional journey:</p>
+            <a href="https://www.linkedin.com/in/wisani-mabunda-4b4964324/" target="_blank" class="linkedin-btn">LinkedIn Profile</a>
+        </div>
+    </div>
+</body>
+</html>

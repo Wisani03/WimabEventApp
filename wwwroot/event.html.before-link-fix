@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -707,200 +707,6 @@
 }
         }
     </style>
-<style id="invitation-styles">
-.invite-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: none;
-    background: #f5b400;
-    color: #07152f;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.invite-button:hover {
-    opacity: 0.9;
-}
-
-.invitation-form {
-    margin-top: 18px;
-    padding: 24px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-}
-
-.form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-.form-header h3 {
-    margin: 0 0 5px;
-    font-size: 20px;
-}
-
-.form-header p {
-    margin: 0;
-    color: #64748b;
-}
-
-.close-button {
-    border: none;
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-}
-
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 7px;
-    font-weight: 600;
-}
-
-.form-group input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 9px;
-    font-size: 15px;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #f5b400;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.cancel-button,
-.send-button {
-    border: none;
-    padding: 11px 18px;
-    border-radius: 9px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.cancel-button {
-    background: #f1f5f9;
-    color: #334155;
-}
-
-.send-button {
-    background: #0b1833;
-    color: white;
-}
-
-.form-error {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: #fef2f2;
-    color: #b91c1c;
-    border-radius: 8px;
-}
-
-.invitation-list {
-    margin-top: 18px;
-    display: grid;
-    gap: 12px;
-}
-
-.invitation-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 18px;
-}
-
-.invitation-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-}
-
-.invitation-guest-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.invitation-contact {
-    margin-top: 5px;
-    color: #64748b;
-    font-size: 14px;
-}
-
-.invitation-status {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 5px 10px;
-    border-radius: 999px;
-    background: #fef3c7;
-    color: #92400e;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.invitation-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-.invitation-action {
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    background: #f1f5f9;
-    color: #0f172a;
-}
-
-.invitation-action:hover {
-    opacity: 0.85;
-}
-
-.invitation-action.whatsapp {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.invitation-action.delete {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.invitation-link {
-    margin-top: 10px;
-    padding: 9px 11px;
-    background: #f8fafc;
-    border-radius: 8px;
-    font-size: 12px;
-    word-break: break-all;
-    color: #475569;
-}
-</style>
 </head>
 
 <body>
@@ -972,7 +778,7 @@
 
                     <div class="meta-content">
                         <span>Date</span>
-                        <strong id="eventDate">â€”</strong>
+                        <strong id="eventDate">—</strong>
                     </div>
 
                 </div>
@@ -985,7 +791,7 @@
 
                     <div class="meta-content">
                         <span>Venue</span>
-                        <strong id="eventVenue">â€”</strong>
+                        <strong id="eventVenue">—</strong>
                     </div>
 
                 </div>
@@ -998,7 +804,7 @@
 
                     <div class="meta-content">
                         <span>Theme</span>
-                        <strong id="eventTheme">â€”</strong>
+                        <strong id="eventTheme">—</strong>
                     </div>
 
                 </div>
@@ -1011,7 +817,7 @@
 
                     <div class="meta-content">
                         <span>Attire</span>
-                        <strong id="eventAttire">â€”</strong>
+                        <strong id="eventAttire">—</strong>
                     </div>
 
                 </div>
@@ -1320,209 +1126,6 @@
             lucide.createIcons();
         }
 
-        function renderInvitations(invitations) {
-
-            const container =
-                document.getElementById("invitationList");
-
-            if (!container) {
-                return;
-            }
-
-            if (!invitations || invitations.length === 0) {
-
-                container.innerHTML = `
-                    <div class="invitation-card">
-                        <div class="empty-state">
-                            <i data-lucide="mail-open" size="32"></i>
-                            <h3>No invitations yet</h3>
-                            <p>Start inviting guests to this event.</p>
-                        </div>
-                    </div>
-                `;
-
-                lucide.createIcons();
-                return;
-            }
-
-            container.innerHTML = invitations.map(invitation => {
-
-                const guestName =
-                    invitation.guestName || "Unnamed Guest";
-
-                const email =
-                    invitation.guestEmail || "";
-
-                const phone =
-                    invitation.guestPhoneNumber || "";
-
-                const status =
-                    invitation.rsvpStatus || "Pending";
-
-                const guid =
-                    invitation.inviteGuid || "";
-
-                const invitationUrl =
-                    `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(guid)}`;
-
-                const whatsappNumber =
-                    phone.replace(/[^0-9]/g, "");
-
-                const whatsappMessage =
-                    `You are invited to ${document.getElementById("eventTitle").textContent}! Please RSVP here: ${invitationUrl}`;
-
-                const whatsappUrl =
-                    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-
-                return `
-                    <div class="invitation-card">
-
-                        <div class="invitation-card-header">
-
-                            <div>
-
-                                <div class="invitation-guest-name">
-                                    ${escapeHtml(guestName)}
-                                </div>
-
-                                <div class="invitation-contact">
-                                    ${email
-                                        ? escapeHtml(email)
-                                        : escapeHtml(phone)}
-                                </div>
-
-                                <span class="invitation-status">
-                                    ${escapeHtml(status)}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="invitation-link">
-                            ${escapeHtml(invitationUrl)}
-                        </div>
-
-                        <div class="invitation-actions">
-
-                            <button
-                                type="button"
-                                class="invitation-action"
-                                onclick="copyInvitationLink('${encodeURIComponent(invitationUrl)}')">
-                                Copy Link
-                            </button>
-
-                            ${
-                                phone
-                                ? `
-                                <button
-                                    type="button"
-                                    class="invitation-action whatsapp"
-                                    onclick="window.open('${whatsappUrl}', '_blank')">
-                                    WhatsApp
-                                </button>
-                                `
-                                : ""
-                            }
-
-                            ${
-                                email
-                                ? `
-                                <button
-                                    type="button"
-                                    class="invitation-action"
-                                    onclick="window.location.href='mailto:${encodeURIComponent(email)}?subject=You are invited!&body=${encodeURIComponent("You are invited to " + document.getElementById("eventTitle").textContent + ". RSVP here: " + invitationUrl)}'">
-                                    Email
-                                </button>
-                                `
-                                : ""
-                            }
-
-                            <button
-                                type="button"
-                                class="invitation-action delete"
-                                onclick="deleteInvitation(${invitation.id})">
-                                Delete
-                            </button>
-
-                        </div>
-
-                    </div>
-                `;
-
-            }).join("");
-
-            lucide.createIcons();
-        }
-
-
-        async function copyInvitationLink(encodedUrl) {
-
-            const url =
-                decodeURIComponent(encodedUrl);
-
-            try {
-
-                await navigator.clipboard.writeText(url);
-
-                alert("Invitation link copied!");
-
-            } catch (error) {
-
-                console.error("Copy failed:", error);
-
-                prompt(
-                    "Copy this invitation link:",
-                    url
-                );
-            }
-        }
-
-
-        async function deleteInvitation(invitationId) {
-
-            if (!confirm("Delete this invitation?")) {
-                return;
-            }
-
-            try {
-
-                const response =
-                    await fetch(
-                        `${API_URL}/${encodeURIComponent(eventId)}/invitations/${invitationId}`,
-                        {
-                            method: "DELETE",
-                            credentials: "include"
-                        }
-                    );
-
-                if (!response.ok) {
-
-                    const result =
-                        await response.json().catch(() => ({}));
-
-                    throw new Error(
-                        result.message ||
-                        "Failed to delete invitation."
-                    );
-                }
-
-                await loadEvent();
-
-            } catch (error) {
-
-                console.error(
-                    "Error deleting invitation:",
-                    error
-                );
-
-                alert(
-                    error.message ||
-                    "Could not delete invitation."
-                );
-            }
-        }
-
         function openInvitationForm() {
 
     document.getElementById("invitationForm").style.display = "block";
@@ -1562,33 +1165,50 @@ async function sendInvitation() {
     const errorBox =
         document.getElementById("invitationFormError");
 
+
     errorBox.style.display = "none";
     errorBox.textContent = "";
 
+
     if (!name) {
-        errorBox.textContent = "Guest name is required.";
+
+        errorBox.textContent =
+            "Guest name is required.";
+
         errorBox.style.display = "block";
+
         return;
     }
+
 
     if (!email && !phone) {
+
         errorBox.textContent =
             "Please provide either an email address or phone number.";
+
         errorBox.style.display = "block";
+
         return;
     }
 
+
     if (!eventId) {
-        errorBox.textContent = "No event ID was found.";
+
+        errorBox.textContent =
+            "No event ID was found.";
+
         errorBox.style.display = "block";
+
         return;
     }
+
 
     const sendButton =
         document.querySelector(".send-button");
 
     sendButton.disabled = true;
     sendButton.innerHTML = "Creating...";
+
 
     try {
 
@@ -1604,75 +1224,43 @@ async function sendInvitation() {
                 credentials: "include",
 
                 body: JSON.stringify({
+
                     guestName: name,
-                    guestEmail: email || null,
-                    guestPhoneNumber: phone || null
+
+                    guestEmail:
+                        email || null,
+
+                    guestPhoneNumber:
+                        phone || null
+
                 })
             }
         );
 
-        const result = await response.json();
+
+        const result =
+            await response.json();
+
 
         if (!response.ok) {
+
             throw new Error(
                 result.message ||
                 "Failed to create invitation."
             );
         }
 
-        /*
-         * The C# backend generates InviteGuid.
-         * We now use it to create the public invitation URL.
-         */
-
-        const inviteGuid = result.inviteGuid;
-
-        if (!inviteGuid) {
-            throw new Error(
-                "Invitation was created, but no invitation code was returned."
-            );
-        }
-
-        const invitationLink =
-            `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
 
         closeInvitationForm();
 
+
         await loadEvent();
 
-        /*
-         * Show the invitation link to the host.
-         */
 
-        const copyLink = confirm(
-            "Invitation created successfully!\n\n" +
-            "Guest: " + name + "\n\n" +
-            "Invitation link:\n" +
-            invitationLink +
-            "\n\n" +
-            "Press OK to copy the invitation link."
+        alert(
+            "Invitation created successfully!"
         );
 
-        if (copyLink) {
-
-            try {
-
-                await navigator.clipboard.writeText(
-                    invitationLink
-                );
-
-                alert(
-                    "Invitation link copied to your clipboard!"
-                );
-
-            } catch (clipboardError) {
-
-                prompt(
-                    "Copy this invitation link:",
-                    invitationLink
-                );
-            }
-        }
 
     } catch (error) {
 
@@ -1681,11 +1269,14 @@ async function sendInvitation() {
             error
         );
 
+
         errorBox.textContent =
             error.message ||
             "Something went wrong.";
 
-        errorBox.style.display = "block";
+        errorBox.style.display =
+            "block";
+
 
     } finally {
 
@@ -1700,7 +1291,7 @@ async function sendInvitation() {
     }
 }
 
-async function loadEvent() {
+        async function loadEvent() {
 
             if (!eventId) {
                 showError(
@@ -1749,7 +1340,7 @@ async function loadEvent() {
             async function copyInvitationLink(inviteGuid) {
 
     const link =
-        `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
+        `${window.location.origin}/invite.html?invite=${encodeURIComponent(inviteGuid)}`;
 
 
     try {
@@ -1835,7 +1426,7 @@ async function loadEvent() {
 
 
             const invitationUrl =
-                `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
+                `${window.location.origin}/invite.html?invite=${encodeURIComponent(inviteGuid)}`;
 
 
             return `
@@ -1868,7 +1459,7 @@ async function loadEvent() {
                             class="copy-invite"
                             onclick="copyInvitationLink('${inviteGuid}')">
 
-                            ðŸ“‹ Copy Link
+                            📋 Copy Link
 
                         </button>
 
@@ -1966,9 +1557,3 @@ async function loadEvent() {
 
 </body>
 </html>
-
-
-
-
-
-

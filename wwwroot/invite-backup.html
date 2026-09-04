@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -60,24 +60,6 @@
                     <i data-lucide="check-square" class="w-5 h-5 text-accent"></i>
                     <span>Submit Your RSVP Response</span>
                 </h3>
-                <!-- RSVP COUNTDOWN -->
-<div id="rsvpCountdown"
-     class="mb-5 bg-white border border-blue-100 rounded-2xl p-4 text-center shadow-sm">
-
-    <div class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-        RSVP closes in
-    </div>
-
-    <div id="countdownTimer"
-         class="text-2xl sm:text-3xl font-bold text-primary tracking-wide">
-        Loading...
-    </div>
-
-    <div id="countdownMessage"
-         class="text-xs text-gray-500 mt-2">
-        Please submit your response before the deadline.
-    </div>
-</div>
 
                 <form id="publicRsvpForm" onsubmit="submitRsvp(event)" class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
@@ -167,407 +149,64 @@
         const urlParams = new URLSearchParams(window.location.search);
         // Extracts eventId from query string (?id=1) or defaults to 1
         const eventId = urlParams.get('id') || 1;
-        const inviteGuid = urlParams.get('invite') || urlParams.get('inviteGuid');
 
-        // =========================================================
-// LOAD INVITATION
-// =========================================================
+        window.onload = function() {
+            const savedTitle = localStorage.getItem('wimab_event_title');
+            if (savedTitle) {
+                document.getElementById('eventTitleDisplay').innerText = savedTitle;
+            }
+        };
 
-window.onload = async function () {
+        // Submit RSVP directly to C# backend API endpoint (/api/guests)
+        async function submitRsvp(e) {
+            e.preventDefault();
 
-    const savedTitle = localStorage.getItem('wimab_event_title');
+            const isAttending = document.getElementById('pubStatus').value === 'true';
+            const guestNameVal = document.getElementById('pubName').value;
+            const guestSurnameVal = document.getElementById('pubSurname').value;
 
-    if (savedTitle) {
-        document.getElementById('eventTitleDisplay').innerText =
-            savedTitle;
-    }
+            const newGuest = {
+                eventId: parseInt(eventId),
+                name: guestNameVal,
+                surname: guestSurnameVal,
+                phone: document.getElementById('pubPhone').value,
+                email: '',
+                isAttending: isAttending,
+                tableNumber: isAttending ? 'Table Assigned' : '-',
+                dietaryRequirements: document.getElementById('pubDiet').value,
+                plusOneName: document.getElementById('pubPlusOne').value,
+                hasAttended: false
+            };
 
-    if (!inviteGuid) {
-        showInvitationError(
-            'This invitation link is missing its invitation code.'
-        );
-        return;
-    }
-
-    await loadInvitation();
-};
-
-
-// =========================================================
-// LOAD INVITATION DETAILS FROM BACKEND
-// =========================================================
-
-async function loadInvitation() {
-
-    try {
-
-        const response = await fetch(
-            `/api/invitations/public/${inviteGuid}`
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-
-            showInvitationError(
-                result.message ||
-                'This invitation could not be loaded.'
-            );
-
-            return;
-        }
-
-        const event = result.eventDetails;
-        const invitation = result.invitation;
-
-        // ---------------------------------------------
-        // DISPLAY EVENT INFORMATION
-        // ---------------------------------------------
-
-        document.getElementById('eventTitleDisplay').innerText =
-            event.title;
-
-        document.getElementById('eventThemeDisplay').innerText =
-            `Theme & Dress Code: ${
-                event.theme || 'Standard'
-            }`;
-
-        document.getElementById('eventVenueDisplay').innerText =
-            event.venueLocation || 'Venue to be confirmed';
-
-        if (event.eventDate) {
-
-            const eventDate = new Date(event.eventDate);
-
-            document.getElementById('eventDateDisplay').innerText =
-                eventDate.toLocaleString('en-ZA', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+            try {
+                const response = await fetch('/api/guests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newGuest)
                 });
-        }
 
-        // ---------------------------------------------
-        // CHECK RSVP STATUS
-        // ---------------------------------------------
+                if (response.ok) {
+                    const result = await response.json();
+                    generatedTicketCode = result.ticketCode; // Retrieved from C# Backend API
 
-        if (invitation.rsvpStatus === 'Accepted') {
+                    document.getElementById('rsvpSection').classList.add('hidden');
 
-            document
-                .getElementById('rsvpSection')
-                .classList.add('hidden');
-
-            generatedTicketCode =
-                invitation.ticketCode || '';
-
-            if (generatedTicketCode) {
-
-                generateTicketAndFinish(
-                    generatedTicketCode,
-                    invitation.guestName,
-                    ''
-                );
+                    if (isAttending) {
+                        loadPublicRegistry();
+                        document.getElementById('giftWishlistSection').classList.remove('hidden');
+                    } else {
+                        generateTicketAndFinish(generatedTicketCode, guestNameVal, guestSurnameVal);
+                    }
+                } else {
+                    alert('Failed to submit RSVP. Please check your inputs.');
+                }
+            } catch (error) {
+                console.error('Error submitting RSVP:', error);
+                alert('Network error while submitting RSVP.');
             }
-
-            return;
         }
-
-        if (invitation.rsvpStatus === 'Declined') {
-
-            disableRsvpForm();
-
-            document.getElementById('countdownTimer').innerText =
-                'RSVP Declined';
-
-            return;
-        }
-
-        // ---------------------------------------------
-        // START COUNTDOWN
-        // ---------------------------------------------
-
-        startRsvpCountdown(
-            event.rsvpDeadline,
-            result.rsvpClosed
-        );
-
-    } catch (error) {
-
-        console.error(
-            'Error loading invitation:',
-            error
-        );
-
-        showInvitationError(
-            'Unable to load this invitation. Please try again.'
-        );
-    }
-}
-
-
-// =========================================================
-// RSVP COUNTDOWN
-// =========================================================
-
-let countdownInterval = null;
-
-function startRsvpCountdown(deadline, alreadyClosed) {
-
-    const timer =
-        document.getElementById('countdownTimer');
-
-    const message =
-        document.getElementById('countdownMessage');
-
-    // No deadline configured
-    if (!deadline) {
-
-        timer.innerText = 'No deadline';
-
-        message.innerText =
-            'Please submit your RSVP when you are ready.';
-
-        return;
-    }
-
-    function updateCountdown() {
-
-        const deadlineDate =
-            new Date(deadline);
-
-        const now =
-            new Date();
-
-        const difference =
-            deadlineDate.getTime() - now.getTime();
-
-        if (
-            alreadyClosed ||
-            difference <= 0
-        ) {
-
-            clearInterval(countdownInterval);
-
-            timer.innerText =
-                '00:00:00';
-
-            message.innerText =
-                'The RSVP deadline has passed.';
-
-            disableRsvpForm();
-
-            return;
-        }
-
-        const totalSeconds =
-            Math.floor(difference / 1000);
-
-        const days =
-            Math.floor(totalSeconds / 86400);
-
-        const hours =
-            Math.floor(
-                (totalSeconds % 86400) / 3600
-            );
-
-        const minutes =
-            Math.floor(
-                (totalSeconds % 3600) / 60
-            );
-
-        const seconds =
-            totalSeconds % 60;
-
-        timer.innerText =
-            `${days}d ` +
-            `${String(hours).padStart(2, '0')}:` +
-            `${String(minutes).padStart(2, '0')}:` +
-            `${String(seconds).padStart(2, '0')}`;
-
-        message.innerText =
-            'Please submit your response before the deadline.';
-    }
-
-    updateCountdown();
-
-    countdownInterval =
-        setInterval(updateCountdown, 1000);
-}
-
-
-// =========================================================
-// DISABLE RSVP FORM
-// =========================================================
-
-function disableRsvpForm() {
-
-    const form =
-        document.getElementById('publicRsvpForm');
-
-    if (!form) return;
-
-    form.querySelectorAll('input, select, button')
-        .forEach(element => {
-            element.disabled = true;
-        });
-
-    const button =
-        form.querySelector('button[type="submit"]');
-
-    if (button) {
-
-        button.innerText =
-            'RSVP Closed';
-
-        button.classList.remove(
-            'bg-primary',
-            'hover:bg-accent'
-        );
-
-        button.classList.add(
-            'bg-gray-400',
-            'cursor-not-allowed'
-        );
-    }
-}
-
-
-// =========================================================
-// INVITATION ERROR
-// =========================================================
-
-function showInvitationError(message) {
-
-    const section =
-        document.getElementById('rsvpSection');
-
-    if (!section) return;
-
-    section.innerHTML = `
-        <div class="text-center py-6">
-
-            <div class="text-red-500 mb-3">
-                <i data-lucide="alert-circle"
-                   class="w-10 h-10 mx-auto"></i>
-            </div>
-
-            <h3 class="font-bold text-primary text-lg">
-                Invitation Unavailable
-            </h3>
-
-            <p class="text-gray-500 text-sm mt-2">
-                ${message}
-            </p>
-
-        </div>
-    `;
-
-    lucide.createIcons();
-}
-// =========================================================
-// SUBMIT RSVP THROUGH INVITATION API
-// =========================================================
-async function submitRsvp(e) {
-    e.preventDefault();
-
-    const isAttending =
-        document.getElementById('pubStatus').value === 'true';
-
-    const guestNameVal =
-        document.getElementById('pubName').value.trim();
-
-    const guestSurnameVal =
-        document.getElementById('pubSurname').value.trim();
-
-    const inviteGuid = urlParams.get('invite') || urlParams.get('inviteGuid');
-
-    if (!inviteGuid) {
-        alert('This invitation link is invalid or incomplete.');
-        return;
-    }
-
-    const rsvpRequest = {
-        name: guestNameVal,
-        surname: guestSurnameVal,
-        phone: document.getElementById('pubPhone').value.trim(),
-        isAttending: isAttending,
-        dietaryRequirements:
-            document.getElementById('pubDiet').value.trim(),
-        plusOneName:
-            document.getElementById('pubPlusOne').value.trim()
-    };
-
-    try {
-        const response = await fetch(
-            `/api/invitations/public/${inviteGuid}/rsvp`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(rsvpRequest)
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-
-            // RSVP deadline has passed
-            if (result.rsvpClosed) {
-                alert(
-                    result.message ||
-                    'The RSVP deadline for this event has passed.'
-                );
-
-                disableRsvpForm();
-                return;
-            }
-
-            alert(
-                result.message ||
-                'Failed to submit RSVP. Please check your information.'
-            );
-
-            return;
-        }
-
-        // Save ticket code returned by the C# backend
-        generatedTicketCode = result.ticketCode || '';
-
-        document
-            .getElementById('rsvpSection')
-            .classList.add('hidden');
-
-        if (isAttending) {
-
-            loadPublicRegistry();
-
-            document
-                .getElementById('giftWishlistSection')
-                .classList.remove('hidden');
-
-        } else {
-
-            generateTicketAndFinish(
-                generatedTicketCode,
-                guestNameVal,
-                guestSurnameVal
-            );
-        }
-
-    } catch (error) {
-
-        console.error('Error submitting RSVP:', error);
-
-        alert(
-            'Network error while submitting RSVP. Please try again.'
-        );
-    }
-}
 
         async function loadPublicRegistry() {
             const container = document.getElementById('publicRegistryList');

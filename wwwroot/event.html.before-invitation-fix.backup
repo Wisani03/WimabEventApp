@@ -1634,7 +1634,7 @@ async function sendInvitation() {
         }
 
         const invitationLink =
-            `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
+            `${window.location.origin}/invite.html?invite=${encodeURIComponent(inviteGuid)}`;
 
         closeInvitationForm();
 
@@ -1749,7 +1749,7 @@ async function loadEvent() {
             async function copyInvitationLink(inviteGuid) {
 
     const link =
-        `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
+        `${window.location.origin}/invite.html?invite=${encodeURIComponent(inviteGuid)}`;
 
 
     try {
@@ -1835,7 +1835,7 @@ async function loadEvent() {
 
 
             const invitationUrl =
-                `${window.location.origin}/invite.html?inviteGuid=${encodeURIComponent(inviteGuid)}`;
+                `${window.location.origin}/invite.html?invite=${encodeURIComponent(inviteGuid)}`;
 
 
             return `
@@ -1966,9 +1966,6 @@ async function loadEvent() {
 
 </body>
 </html>
-
-
-
 
 
 
